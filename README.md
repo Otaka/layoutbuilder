@@ -1,3 +1,4 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.otaka/swinglayoutbuilder/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.otaka/swinglayoutbuilder)
 # SwingLayoutBuilder
 Java swing layout builder that helps to create complex forms.
 
@@ -22,6 +23,17 @@ The builder supports several layouts to simplify some popular cases:
 * Simple form construction where we have several columns of label->component aligned by baseline
 * Place component at left/right/top/left/center of parent component
 * Constraint layout that is very similar to default SpringLayout, but much simpler. It just executes list of rules sequentially, that is why placement is very predictable.
+
+###Maven
+```xml
+<dependency>
+    <groupId>io.github.otaka</groupId>
+    <artifactId>swinglayoutbuilder</artifactId>
+    <version>0.2</version>
+</dependency>
+```
+
+
 
 #SwingLayoutBuilder.borderLayout
 It is just default java's BorderLayout wrapped in builder syntax
