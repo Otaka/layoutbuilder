@@ -7,6 +7,7 @@ import com.swinglayoutbuilder.constraintlayout.Edge;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     private ConstraintLayoutGroup currentGroup;
     private final Map<String, Component> id2ComponentMap = new HashMap<>();
     private final ConstraintLayout layout;
-    private int currentGap;
+    private int gapBetweenComponents;
 
 
     protected ConstraintLayoutBuilder(Container container) {
@@ -29,8 +30,8 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
         container.setLayout(layout);
     }
 
-    public ConstraintLayoutBuilder gap(int value) {
-        this.currentGap = value;
+    public ConstraintLayoutBuilder gapBetweenComponents(int value) {
+        this.gapBetweenComponents = value;
         return this;
     }
 
@@ -89,8 +90,8 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     }
 
 
-    public ConstraintLayoutBuilder padding(int top, int left, int bottom, int right) {
-        layout.setPadding(top, left, bottom, right);
+    public ConstraintLayoutBuilder globalMargin(int top, int left, int bottom, int right) {
+        layout.setMargin(top, left, bottom, right);
         return this;
     }
 
@@ -147,7 +148,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
      */
     public ConstraintLayoutBuilder linkToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
         checkCurrentComponent();
-        return link(currentComponent, edge, anchorComponentId, anchorEdge, currentGap);
+        return link(currentComponent, edge, anchorComponentId, anchorEdge, gapBetweenComponents);
     }
 
     /**
@@ -162,15 +163,15 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
      * Attach component with id componentId to other component with id anchorComponentId
      */
     public ConstraintLayoutBuilder linkIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge) {
-        Component component=getComponentById(componentId);
-        return link(component, edge, anchorComponentId, anchorEdge, currentGap);
+        Component component = getComponentById(componentId);
+        return link(component, edge, anchorComponentId, anchorEdge, gapBetweenComponents);
     }
 
     /**
      * Attach component with id componentId to other component with id anchorComponentId
      */
     public ConstraintLayoutBuilder linkIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
-        Component component=getComponentById(componentId);
+        Component component = getComponentById(componentId);
         return link(component, edge, anchorComponentId, anchorEdge, gap);
     }
 
@@ -179,7 +180,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
      */
     public ConstraintLayoutBuilder linkToParent(Edge edge, Edge parentEdge) {
         checkCurrentComponent();
-        layout.addConstraint(new Constraint(parentEdge, container, currentGap, edge, currentComponent));
+        layout.addConstraint(new Constraint(parentEdge, container, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
@@ -198,7 +199,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     public ConstraintLayoutBuilder linkToPrevious(Edge edge, Edge previousComponentEdge) {
         checkCurrentComponent();
         checkPreviousComponent();
-        layout.addConstraint(new Constraint(previousComponentEdge, previousComponent, currentGap, edge, currentComponent));
+        layout.addConstraint(new Constraint(previousComponentEdge, previousComponent, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
@@ -218,7 +219,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     public ConstraintLayoutBuilder linkToAnchor1(Edge edge, Edge anchor1ComponentEdge) {
         checkCurrentComponent();
         checkAnchor1Component();
-        layout.addConstraint(new Constraint(anchor1ComponentEdge, anchor1Component, currentGap, edge, currentComponent));
+        layout.addConstraint(new Constraint(anchor1ComponentEdge, anchor1Component, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
@@ -238,7 +239,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     public ConstraintLayoutBuilder linkToAnchor2(Edge edge, Edge anchor2ComponentEdge) {
         checkCurrentComponent();
         checkAnchor2Component();
-        layout.addConstraint(new Constraint(anchor2ComponentEdge, anchor2Component, currentGap, edge, currentComponent));
+        layout.addConstraint(new Constraint(anchor2ComponentEdge, anchor2Component, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
@@ -258,7 +259,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     public ConstraintLayoutBuilder linkToAnchor3(Edge edge, Edge anchor3ComponentEdge) {
         checkCurrentComponent();
         checkAnchor3Component();
-        layout.addConstraint(new Constraint(anchor3ComponentEdge, anchor3Component, currentGap, edge, currentComponent));
+        layout.addConstraint(new Constraint(anchor3ComponentEdge, anchor3Component, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
@@ -269,6 +270,30 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
         checkCurrentComponent();
         checkAnchor3Component();
         layout.addConstraint(new Constraint(anchor3ComponentEdge, anchor3Component, gap, edge, currentComponent));
+        return this;
+    }
+
+    /**
+     * Set preferred size of last added component
+     */
+    public ConstraintLayoutBuilder preferredSize(int width, int height) {
+        currentComponent.setPreferredSize(new Dimension(width, height));
+        return this;
+    }
+
+    /**
+     * Set minimum size of last added component
+     */
+    public ConstraintLayoutBuilder minimumSize(int width, int height) {
+        currentComponent.setMinimumSize(new Dimension(width, height));
+        return this;
+    }
+
+    /**
+     * Set maximum size of last added component
+     */
+    public ConstraintLayoutBuilder maximumSize(int width, int height) {
+        currentComponent.setMaximumSize(new Dimension(width, height));
         return this;
     }
 
@@ -312,4 +337,6 @@ public class ConstraintLayoutBuilder extends AbstractBuilder {
     private void checkCurrentGroup() {
         throwIfNull(currentGroup, "There is no current group");
     }
+
+
 }

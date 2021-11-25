@@ -8,7 +8,7 @@ public class ConstraintLayout implements LayoutManager2 {
     private final List<Constraint> constraints = new ArrayList<>();
     private final Map<Component, ComponentRect> componentRectangleMap = new HashMap<>();
     private final Set<ConstraintLayoutGroup> groups = new HashSet<>();
-    private final Insets layoutPadding = new Insets(0, 0, 0, 0);
+    private final Insets layoutMargin = new Insets(0, 0, 0, 0);
 
     public ConstraintLayoutGroup createGroup() {
         ConstraintLayoutGroup newGroup = new ConstraintLayoutGroup(this);
@@ -23,8 +23,8 @@ public class ConstraintLayout implements LayoutManager2 {
         return this;
     }
 
-    public ConstraintLayout setPadding(int top, int left, int bottom, int right) {
-        layoutPadding.set(top, left, bottom, right);
+    public ConstraintLayout setMargin(int top, int left, int bottom, int right) {
+        layoutMargin.set(top, left, bottom, right);
         return this;
     }
 
@@ -84,8 +84,8 @@ public class ConstraintLayout implements LayoutManager2 {
             maxY = Math.max(maxY, rect.getY2());
         }
 
-        maxX += layoutPadding.left + layoutPadding.right;
-        maxY += layoutPadding.top + layoutPadding.bottom;
+        maxX += layoutMargin.left + layoutMargin.right;
+        maxY += layoutMargin.top + layoutMargin.bottom;
         return new Dimension(maxX, maxY);
     }
 
@@ -95,7 +95,7 @@ public class ConstraintLayout implements LayoutManager2 {
 
         for (Component component : parent.getComponents()) {
             ComponentRect rect = getRect(component);
-            component.setBounds(rect.getX() + layoutPadding.left, rect.getY() + layoutPadding.top, rect.getWidth(), rect.getHeight());
+            component.setBounds(rect.getX() + layoutMargin.left, rect.getY() + layoutMargin.top, rect.getWidth(), rect.getHeight());
         }
     }
 
@@ -117,7 +117,7 @@ public class ConstraintLayout implements LayoutManager2 {
         }
 
         ComponentRect parentComponentRect = getRect(parent);
-        parentComponentRect.reset(0, 0, parent.getWidth() - layoutPadding.left - layoutPadding.right, parent.getHeight() - layoutPadding.top - layoutPadding.bottom);
+        parentComponentRect.reset(0, 0, parent.getWidth() - layoutMargin.left - layoutMargin.right, parent.getHeight() - layoutMargin.top - layoutMargin.bottom);
 
         for (Constraint constraint : constraints) {
             ComponentRect anchorComponentRect = getRect(constraint.getAnchorComponent());

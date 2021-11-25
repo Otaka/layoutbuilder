@@ -1,6 +1,7 @@
 package com.swinglayoutbuilder;
 
 import javax.swing.*;
+import java.awt.Component;
 import java.awt.Container;
 
 public class SwingLayoutBuilder {
@@ -18,15 +19,15 @@ public class SwingLayoutBuilder {
         return new RowWithWrappingBuilder(container);
     }
 
-    public AttachToEdgesBuilder attachToEdgesLayout() {
-        return new AttachToEdgesBuilder(container);
+    public BorderLayoutBuilder borderLayout() {
+        return new BorderLayoutBuilder(container);
     }
 
     public ConstraintLayoutBuilder constraintLayout() {
         return new ConstraintLayoutBuilder(container);
     }
 
-    public SimpleFormLayoutBuilder simpleFormLayout() {
-        return new SimpleFormLayoutBuilder(container);
+    public FormLayoutBuilder formLayout() {
+        return new FormLayoutBuilder(container);
     }
 }
