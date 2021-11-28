@@ -49,16 +49,19 @@ public class SwingLayoutBuilderTest {
         lastNameTf.setFont(lastNameTf.getFont().deriveFont(30.f));
         JFrame frame = createJFrame("Form layout");
         new SwingLayoutBuilder(frame).formLayout()
-                .gapLabelToComponent(3)
-                .gapBetweenRows(5)
+                .gapLabelToComponent(10)
+                .gapBetweenRows(10)
                 .gapBetweenColumns(10)
                 .labelsRightAlignment()
                 .add("First Name:", new JTextField("First name"))
                 .add("Last Name:", lastNameTf)
                 .add("Age:", new JTextField("Age"))
+                .add(new JCheckBox("My check box"))
                 .newColumn()
                 .add("City:", new JTextField("City"))
                 .add("Street:", new JTextField("Street"))
+                .add("House:", new JTextField("House"))
+                .add("Apartment:", new JTextField("Apartment"))
                 .finish();
         showFrame(frame);
     }

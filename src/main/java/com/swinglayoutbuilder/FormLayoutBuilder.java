@@ -70,6 +70,12 @@ public class FormLayoutBuilder extends AbstractBuilder {
         return add(label, component);
     }
 
+    public FormLayoutBuilder add(Component component) {
+        currentComponent = component;
+        return add((Component) null, component);
+    }
+
+
     public FormLayoutBuilder add(Component label, Component component) {
         currentColumn.add(new Pair(label, component));
         return this;
@@ -107,7 +113,6 @@ public class FormLayoutBuilder extends AbstractBuilder {
     public Container finish() {
         GridBagLayout layout = new GridBagLayout();
         container.setLayout(layout);
-        Insets ins = new Insets(gapBetweenRows, 0, 0, 0);
         int column = 0;
         for (List<Pair> currentColumn : columns) {
             int row = 0;
@@ -124,21 +129,34 @@ public class FormLayoutBuilder extends AbstractBuilder {
                 container.add(paddingPanel, c);
             }
             for (Pair pair : currentColumn) {
-                GridBagConstraints c = new GridBagConstraints();
-                c.fill = GridBagConstraints.NONE;
-                c.gridx = column * 3;
-                c.gridy = row;
-                c.anchor = labelLeftAlignment ? GridBagConstraints.BASELINE_LEADING : GridBagConstraints.BASELINE_TRAILING;
-                c.insets = ins;
-                container.add(pair.label, c);
+                if(pair.label!=null) {
+                    int rowTopInsets=row>0?gapBetweenRows:0;
+                    GridBagConstraints c = new GridBagConstraints();
+                    c.fill = GridBagConstraints.NONE;
+                    c.gridx = column * 3;
+                    c.gridy = row;
+                    c.anchor = labelLeftAlignment ? GridBagConstraints.BASELINE_LEADING : GridBagConstraints.BASELINE_TRAILING;
 
-                c = new GridBagConstraints();
-                c.gridx = column * 3 + 1;
-                c.gridy = row;
-                c.anchor = GridBagConstraints.BASELINE_LEADING;
-                c.insets = ins;
-                c.fill = GridBagConstraints.NONE;
-                container.add(pair.field, c);
+                    c.insets = new Insets(rowTopInsets, 0, 0, gapLabelToComponent);
+                    container.add(pair.label, c);
+
+                    c = new GridBagConstraints();
+                    c.gridx = column * 3 + 1;
+                    c.gridy = row;
+                    c.anchor = GridBagConstraints.BASELINE_LEADING;
+                    c.insets = new Insets(rowTopInsets, 0, 0, 0);
+                    c.fill = GridBagConstraints.NONE;
+                    container.add(pair.field, c);
+                }else{
+                    GridBagConstraints c = new GridBagConstraints();
+                    c.gridx = column * 3;
+                    c.gridy = row;
+                    c.gridwidth=2;
+                    c.anchor = GridBagConstraints.BASELINE_LEADING;
+                    c.insets = new Insets(0, 0, 0, 0);
+                    c.fill = GridBagConstraints.NONE;
+                    container.add(pair.field, c);
+                }
                 row++;
             }
             column++;
