@@ -6,7 +6,7 @@
 
     <groupId>io.github.otaka</groupId>
     <artifactId>swinglayoutbuilder</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -17,7 +17,7 @@
     </dependencies>
 
     <name>Swing Layout Builder</name>
-    <description>Library that allows to create complex form with powerfull ConstraintLayout and builder syntax
+    <description>Library that allows to create complex form with powerful ConstraintLayout and builder syntax
     </description>
     <url>https://github.com/Otaka/swinglayoutbuilder</url>
 
