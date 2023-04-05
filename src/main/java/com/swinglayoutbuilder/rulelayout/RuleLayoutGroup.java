@@ -1,19 +1,19 @@
-package com.swinglayoutbuilder.constraintlayout;
+package com.swinglayoutbuilder.rulelayout;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConstraintLayoutGroup extends Component {
+public class RuleLayoutGroup extends Component {
     private final List<Component> children = new ArrayList<>();
     private final ComponentRect rectangle = new ComponentRect();
-    private final ConstraintLayout owner;
+    private final RuleLayout owner;
 
-    public ConstraintLayoutGroup(ConstraintLayout owner) {
+    public RuleLayoutGroup(RuleLayout owner) {
         this.owner = owner;
     }
 
-    public ConstraintLayoutGroup addComponent(Component component) {
+    public RuleLayoutGroup addComponent(Component component) {
         children.add(component);
         return this;
     }

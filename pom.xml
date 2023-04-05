@@ -6,7 +6,7 @@
 
     <groupId>io.github.otaka</groupId>
     <artifactId>swinglayoutbuilder</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -46,8 +46,8 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>7</maven.compiler.source>
-        <maven.compiler.target>7</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

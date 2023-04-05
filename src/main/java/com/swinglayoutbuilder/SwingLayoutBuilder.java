@@ -5,7 +5,7 @@ import java.awt.Container;
 
 public class SwingLayoutBuilder {
     private final Container container;
-    public static final String PARENT = "ConstraintLayoutBuilder_PARENT";
+    public static final String PARENT = "RuleLayoutBuilder_PARENT";
 
     public SwingLayoutBuilder(Container container) {
         if (container instanceof RootPaneContainer) {
@@ -22,9 +22,8 @@ public class SwingLayoutBuilder {
         return new BorderLayoutBuilder(container);
     }
 
-    public ConstraintLayoutBuilder ruleLayout() {
-
-        return new ConstraintLayoutBuilder(container);
+    public RuleLayoutBuilder ruleLayout() {
+        return new RuleLayoutBuilder(container);
     }
 
     public FormLayoutBuilder formLayout() {

@@ -29,7 +29,7 @@ The builder supports several layouts to simplify some popular cases:
 <dependency>
     <groupId>io.github.otaka</groupId>
     <artifactId>swinglayoutbuilder</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 </dependency>
 ```
 

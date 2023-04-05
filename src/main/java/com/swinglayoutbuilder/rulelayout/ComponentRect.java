@@ -1,4 +1,4 @@
-package com.swinglayoutbuilder.constraintlayout;
+package com.swinglayoutbuilder.rulelayout;
 
 public class ComponentRect {
     private int x;

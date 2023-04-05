@@ -1,9 +1,9 @@
-package com.swinglayoutbuilder.constraintlayout;
+package com.swinglayoutbuilder.rulelayout;
 
 import javax.swing.*;
 import java.awt.Component;
 
-public class Constraint {
+public class Rule {
     private final Edge anchorEdge;
     private final Component anchorComponent;
     private final Edge edge;
@@ -11,7 +11,7 @@ public class Constraint {
     private final int offset;
 
 
-    public Constraint(Edge anchorEdge, Component anchorComponent, int offset, Edge edge, Component component) {
+    public Rule(Edge anchorEdge, Component anchorComponent, int offset, Edge edge, Component component) {
         this.anchorEdge = anchorEdge;
         this.anchorComponent = anchorComponent;
         this.edge = edge;

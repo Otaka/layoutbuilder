@@ -1,4 +1,4 @@
-package com.swinglayoutbuilder.constraintlayout;
+package com.swinglayoutbuilder.rulelayout;
 
 public enum Edge {
     LEFT,

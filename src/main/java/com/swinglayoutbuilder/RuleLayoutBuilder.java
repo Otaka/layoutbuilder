@@ -1,41 +1,41 @@
 package com.swinglayoutbuilder;
 
-import com.swinglayoutbuilder.constraintlayout.Constraint;
-import com.swinglayoutbuilder.constraintlayout.ConstraintLayout;
-import com.swinglayoutbuilder.constraintlayout.ConstraintLayoutGroup;
-import com.swinglayoutbuilder.constraintlayout.Edge;
+import com.swinglayoutbuilder.rulelayout.Rule;
+import com.swinglayoutbuilder.rulelayout.RuleLayout;
+import com.swinglayoutbuilder.rulelayout.RuleLayoutGroup;
+import com.swinglayoutbuilder.rulelayout.Edge;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBuilder> {
+public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
 
     private Component previousComponent;
     private Component currentComponent;
     private Component anchor1Component;
     private Component anchor2Component;
     private Component anchor3Component;
-    private ConstraintLayoutGroup currentGroup;
+    private RuleLayoutGroup currentGroup;
     private final Map<String, Component> id2ComponentMap = new HashMap<>();
-    private final ConstraintLayout layout;
+    private final RuleLayout layout;
     private int gapBetweenComponents;
 
 
-    protected ConstraintLayoutBuilder(Container container) {
+    protected RuleLayoutBuilder(Container container) {
         super(container);
-        layout = new ConstraintLayout(container);
+        layout = new RuleLayout(container);
         container.setLayout(layout);
         currentComponent=container;
     }
 
-    public ConstraintLayoutBuilder gapBetweenComponents(int value) {
+    public RuleLayoutBuilder gapBetweenComponents(int value) {
         this.gapBetweenComponents = value;
         return this;
     }
 
-    public ConstraintLayoutBuilder createGroup(String id) {
-        ConstraintLayoutGroup group = layout.createGroup();
+    public RuleLayoutBuilder createGroup(String id) {
+        RuleLayoutGroup group = layout.createGroup();
         if (id2ComponentMap.containsKey(id)) {
             throw new IllegalArgumentException("Component/group with id [" + id + "] is already present in builder");
         }
@@ -48,7 +48,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Add current component to current group
      */
-    public ConstraintLayoutBuilder addToCurrentGroup() {
+    public RuleLayoutBuilder addToCurrentGroup() {
         checkCurrentComponent();
         checkCurrentGroup();
         currentGroup.addComponent(currentComponent);
@@ -58,12 +58,12 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Add component with id componentId to group with id groupId
      */
-    public ConstraintLayoutBuilder addToGroup(String componentId, String groupId) {
+    public RuleLayoutBuilder addToGroup(String componentId, String groupId) {
         Component componentToAdd = getComponentById(componentId);
         Component groupComponent = getComponentById(groupId);
 
-        if (groupComponent instanceof ConstraintLayoutGroup) {
-            ConstraintLayoutGroup group = (ConstraintLayoutGroup) groupComponent;
+        if (groupComponent instanceof RuleLayoutGroup) {
+            RuleLayoutGroup group = (RuleLayoutGroup) groupComponent;
             group.addComponent(componentToAdd);
         } else {
             throw new IllegalArgumentException("Component with id [" + groupId + "] is not group");
@@ -75,11 +75,11 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Add current component to group with id groupId
      */
-    public ConstraintLayoutBuilder addToGroup(String groupId) {
+    public RuleLayoutBuilder addToGroup(String groupId) {
         checkCurrentComponent();
         Component groupComponent = getComponentById(groupId);
-        if (groupComponent instanceof ConstraintLayoutGroup) {
-            ConstraintLayoutGroup group = (ConstraintLayoutGroup) groupComponent;
+        if (groupComponent instanceof RuleLayoutGroup) {
+            RuleLayoutGroup group = (RuleLayoutGroup) groupComponent;
             group.addComponent(currentComponent);
         } else {
             throw new IllegalArgumentException("Component with id [" + groupId + "] is not group");
@@ -89,12 +89,12 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     }
 
 
-    public ConstraintLayoutBuilder globalMargin(int top, int left, int bottom, int right) {
+    public RuleLayoutBuilder globalMargin(int top, int left, int bottom, int right) {
         layout.setMargin(top, left, bottom, right);
         return this;
     }
 
-    public ConstraintLayoutBuilder id(String id) {
+    public RuleLayoutBuilder id(String id) {
         checkCurrentComponent();
         if (id2ComponentMap.containsKey(id)) {
             throw new IllegalArgumentException("Component/group with id [" + id + "] is already present in builder");
@@ -104,30 +104,30 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
         return this;
     }
 
-    public ConstraintLayoutBuilder anchor1() {
+    public RuleLayoutBuilder anchor1() {
         checkCurrentComponent();
         anchor1Component = currentComponent;
         return this;
     }
 
-    public ConstraintLayoutBuilder anchor2() {
+    public RuleLayoutBuilder anchor2() {
         checkCurrentComponent();
         anchor2Component = currentComponent;
         return this;
     }
 
-    public ConstraintLayoutBuilder anchor3() {
+    public RuleLayoutBuilder anchor3() {
         checkCurrentComponent();
         anchor3Component = currentComponent;
         return this;
     }
 
-    public ConstraintLayoutBuilder add(Component component) {
+    public RuleLayoutBuilder add(Component component) {
         add(null, component);
         return this;
     }
 
-    public ConstraintLayoutBuilder add(String id, Component component) {
+    public RuleLayoutBuilder add(String id, Component component) {
         add(container, component, null);
         previousComponent = currentComponent;
         currentComponent = component;
@@ -137,22 +137,22 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
         return this;
     }
 
-    public ConstraintLayoutBuilder move(Component component, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
-        layout.addRule(new Constraint(anchorEdge, getComponentById(anchorComponentId), gap, edge, component));
+    public RuleLayoutBuilder move(Component component, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+        layout.addRule(new Rule(anchorEdge, getComponentById(anchorComponentId), gap, edge, component));
         return this;
     }
 
     /**
      * Move parent edge to some other component edge by id
      */
-    public ConstraintLayoutBuilder moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
+    public RuleLayoutBuilder moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
         return move(container, edge, anchorComponentId, anchorEdge, gapBetweenComponents);
     }
 
     /**
      * Move parent edge to other component edge by id
      */
-    public ConstraintLayoutBuilder moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         return move(container, edge, anchorComponentId, anchorEdge, gap);
     }
 
@@ -160,25 +160,25 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Move parent edge to current component edge
      */
-    public ConstraintLayoutBuilder moveParentToCurrent(Edge edge, Edge previousComponentEdge) {
+    public RuleLayoutBuilder moveParentToCurrent(Edge edge, Edge previousComponentEdge) {
         checkCurrentComponent();
-        layout.addRule(new Constraint(previousComponentEdge, currentComponent, gapBetweenComponents, edge, container));
+        layout.addRule(new Rule(previousComponentEdge, currentComponent, gapBetweenComponents, edge, container));
         return this;
     }
 
     /**
      * Move parent edge to current component edge
      */
-    public ConstraintLayoutBuilder moveParentToCurrent(Edge edge, Edge previousComponentEdge, int gap) {
+    public RuleLayoutBuilder moveParentToCurrent(Edge edge, Edge previousComponentEdge, int gap) {
         checkCurrentComponent();
-        layout.addRule(new Constraint(previousComponentEdge, currentComponent, gap, edge, container));
+        layout.addRule(new Rule(previousComponentEdge, currentComponent, gap, edge, container));
         return this;
     }
 
     /**
      * Move current component to other component with id anchorComponentId
      */
-    public ConstraintLayoutBuilder moveToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
+    public RuleLayoutBuilder moveToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
         checkCurrentComponent();
         return move(currentComponent, edge, anchorComponentId, anchorEdge, gapBetweenComponents);
     }
@@ -186,7 +186,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Move current component to other component with id anchorComponentId
      */
-    public ConstraintLayoutBuilder moveToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder moveToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         checkCurrentComponent();
         return move(currentComponent, edge, anchorComponentId, anchorEdge, gap);
     }
@@ -194,7 +194,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Move component with id componentId to other component with id anchorComponentId
      */
-    public ConstraintLayoutBuilder moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge) {
+    public RuleLayoutBuilder moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge) {
         Component component = getComponentById(componentId);
         return move(component, edge, anchorComponentId, anchorEdge, gapBetweenComponents);
     }
@@ -202,7 +202,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Move component with id componentId to other component with id anchorComponentId
      */
-    public ConstraintLayoutBuilder moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         Component component = getComponentById(componentId);
         return move(component, edge, anchorComponentId, anchorEdge, gap);
     }
@@ -210,123 +210,123 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Move current component to parent component
      */
-    public ConstraintLayoutBuilder moveToParent(Edge edge, Edge parentEdge) {
+    public RuleLayoutBuilder moveToParent(Edge edge, Edge parentEdge) {
         checkCurrentComponent();
-        layout.addRule(new Constraint(parentEdge, container, gapBetweenComponents, edge, currentComponent));
+        layout.addRule(new Rule(parentEdge, container, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to parent component
      */
-    public ConstraintLayoutBuilder moveToParent(Edge edge, Edge parentEdge, int gap) {
+    public RuleLayoutBuilder moveToParent(Edge edge, Edge parentEdge, int gap) {
         checkCurrentComponent();
-        layout.addRule(new Constraint(parentEdge, container, gap, edge, currentComponent));
+        layout.addRule(new Rule(parentEdge, container, gap, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to parent component
      */
-    public ConstraintLayoutBuilder moveIdToParent(String componentId, Edge edge, Edge parentEdge, int gap) {
+    public RuleLayoutBuilder moveIdToParent(String componentId, Edge edge, Edge parentEdge, int gap) {
         Component component = getComponentById(componentId);
-        layout.addRule(new Constraint(parentEdge, container, gap, edge, component));
+        layout.addRule(new Rule(parentEdge, container, gap, edge, component));
         return this;
     }
 
     /**
      * Move component with id componentId to parent component
      */
-    public ConstraintLayoutBuilder moveIdToParent(String componentId, Edge edge, Edge parentEdge) {
+    public RuleLayoutBuilder moveIdToParent(String componentId, Edge edge, Edge parentEdge) {
         Component component = getComponentById(componentId);
-        layout.addRule(new Constraint(parentEdge, container, gapBetweenComponents, edge, component));
+        layout.addRule(new Rule(parentEdge, container, gapBetweenComponents, edge, component));
         return this;
     }
 
     /**
      * Move current component to previous component
      */
-    public ConstraintLayoutBuilder moveToPrevious(Edge edge, Edge previousComponentEdge) {
+    public RuleLayoutBuilder moveToPrevious(Edge edge, Edge previousComponentEdge) {
         checkCurrentComponent();
         checkPreviousComponent();
-        layout.addRule(new Constraint(previousComponentEdge, previousComponent, gapBetweenComponents, edge, currentComponent));
+        layout.addRule(new Rule(previousComponentEdge, previousComponent, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to previous component
      */
-    public ConstraintLayoutBuilder moveToPrevious(Edge edge, Edge previousComponentEdge, int gap) {
+    public RuleLayoutBuilder moveToPrevious(Edge edge, Edge previousComponentEdge, int gap) {
         checkCurrentComponent();
         checkPreviousComponent();
-        layout.addRule(new Constraint(previousComponentEdge, previousComponent, gap, edge, currentComponent));
+        layout.addRule(new Rule(previousComponentEdge, previousComponent, gap, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to anchor1 component
      */
-    public ConstraintLayoutBuilder moveToAnchor1(Edge edge, Edge anchor1ComponentEdge) {
+    public RuleLayoutBuilder moveToAnchor1(Edge edge, Edge anchor1ComponentEdge) {
         checkCurrentComponent();
         checkAnchor1Component();
-        layout.addRule(new Constraint(anchor1ComponentEdge, anchor1Component, gapBetweenComponents, edge, currentComponent));
+        layout.addRule(new Rule(anchor1ComponentEdge, anchor1Component, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to anchor1 component
      */
-    public ConstraintLayoutBuilder moveToAnchor1(Edge edge, Edge anchor1ComponentEdge, int gap) {
+    public RuleLayoutBuilder moveToAnchor1(Edge edge, Edge anchor1ComponentEdge, int gap) {
         checkCurrentComponent();
         checkAnchor1Component();
-        layout.addRule(new Constraint(anchor1ComponentEdge, anchor1Component, gap, edge, currentComponent));
+        layout.addRule(new Rule(anchor1ComponentEdge, anchor1Component, gap, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to anchor2 component
      */
-    public ConstraintLayoutBuilder moveToAnchor2(Edge edge, Edge anchor2ComponentEdge) {
+    public RuleLayoutBuilder moveToAnchor2(Edge edge, Edge anchor2ComponentEdge) {
         checkCurrentComponent();
         checkAnchor2Component();
-        layout.addRule(new Constraint(anchor2ComponentEdge, anchor2Component, gapBetweenComponents, edge, currentComponent));
+        layout.addRule(new Rule(anchor2ComponentEdge, anchor2Component, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to anchor2 component
      */
-    public ConstraintLayoutBuilder moveToAnchor2(Edge edge, Edge anchor2ComponentEdge, int gap) {
+    public RuleLayoutBuilder moveToAnchor2(Edge edge, Edge anchor2ComponentEdge, int gap) {
         checkCurrentComponent();
         checkAnchor2Component();
-        layout.addRule(new Constraint(anchor2ComponentEdge, anchor2Component, gap, edge, currentComponent));
+        layout.addRule(new Rule(anchor2ComponentEdge, anchor2Component, gap, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to anchor3 component
      */
-    public ConstraintLayoutBuilder moveToAnchor3(Edge edge, Edge anchor3ComponentEdge) {
+    public RuleLayoutBuilder moveToAnchor3(Edge edge, Edge anchor3ComponentEdge) {
         checkCurrentComponent();
         checkAnchor3Component();
-        layout.addRule(new Constraint(anchor3ComponentEdge, anchor3Component, gapBetweenComponents, edge, currentComponent));
+        layout.addRule(new Rule(anchor3ComponentEdge, anchor3Component, gapBetweenComponents, edge, currentComponent));
         return this;
     }
 
     /**
      * Move current component to anchor3 component
      */
-    public ConstraintLayoutBuilder moveToAnchor3(Edge edge, Edge anchor3ComponentEdge, int gap) {
+    public RuleLayoutBuilder moveToAnchor3(Edge edge, Edge anchor3ComponentEdge, int gap) {
         checkCurrentComponent();
         checkAnchor3Component();
-        layout.addRule(new Constraint(anchor3ComponentEdge, anchor3Component, gap, edge, currentComponent));
+        layout.addRule(new Rule(anchor3ComponentEdge, anchor3Component, gap, edge, currentComponent));
         return this;
     }
 
     /**
      * Set preferred size of last added component, or for parent in case if no components are added yet
      */
-    public ConstraintLayoutBuilder preferredSize(int width, int height) {
+    public RuleLayoutBuilder preferredSize(int width, int height) {
         currentComponent.setPreferredSize(new Dimension(width, height));
         return this;
     }
@@ -334,7 +334,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Set minimum size of last added component
      */
-    public ConstraintLayoutBuilder minimumSize(int width, int height) {
+    public RuleLayoutBuilder minimumSize(int width, int height) {
         currentComponent.setMinimumSize(new Dimension(width, height));
         return this;
     }
@@ -342,7 +342,7 @@ public class ConstraintLayoutBuilder extends AbstractBuilder<ConstraintLayoutBui
     /**
      * Set maximum size of last added component
      */
-    public ConstraintLayoutBuilder maximumSize(int width, int height) {
+    public RuleLayoutBuilder maximumSize(int width, int height) {
         currentComponent.setMaximumSize(new Dimension(width, height));
         return this;
     }

@@ -1,34 +1,34 @@
-package com.swinglayoutbuilder.constraintlayout;
+package com.swinglayoutbuilder.rulelayout;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class ConstraintLayout implements LayoutManager2 {
-    private final List<Constraint> rules = new ArrayList<>();
+public class RuleLayout implements LayoutManager2 {
+    private final List<Rule> rules = new ArrayList<>();
     private final Map<Component, ComponentRect> componentRectangleMap = new HashMap<>();
-    private final Set<ConstraintLayoutGroup> groups = new HashSet<>();
+    private final Set<RuleLayoutGroup> groups = new HashSet<>();
     private final Insets layoutMargin = new Insets(0, 0, 0, 0);
     private final Container parent;
 
-    public ConstraintLayout(Container parent) {
+    public RuleLayout(Container parent) {
         this.parent = parent;
     }
 
-    public ConstraintLayoutGroup createGroup() {
-        ConstraintLayoutGroup newGroup = new ConstraintLayoutGroup(this);
+    public RuleLayoutGroup createGroup() {
+        RuleLayoutGroup newGroup = new RuleLayoutGroup(this);
         groups.add(newGroup);
         return newGroup;
     }
 
-    public ConstraintLayout addRule(Constraint... rules) {
-        for (Constraint c : rules) {
+    public RuleLayout addRule(Rule... rules) {
+        for (Rule c : rules) {
             this.rules.add(c);
         }
         return this;
     }
 
-    public ConstraintLayout setMargin(int top, int left, int bottom, int right) {
+    public RuleLayout setMargin(int top, int left, int bottom, int right) {
         layoutMargin.set(top, left, bottom, right);
         return this;
     }
@@ -134,10 +134,10 @@ public class ConstraintLayout implements LayoutManager2 {
         ComponentRect parentComponentRect = getRect(parent);
         parentComponentRect.reset(0, 0, parent.getWidth() - layoutMargin.left - layoutMargin.right, parent.getHeight() - layoutMargin.top - layoutMargin.bottom);
         parentComponentRect.fixX1Y1Position();
-        for (Constraint rule : rules) {
+        for (Rule rule : rules) {
             ComponentRect anchorComponentRect = getRect(rule.getAnchorComponent());
             ComponentRect componentRect = getRect(rule.getComponent());
-            if (rule.getComponent() instanceof ConstraintLayoutGroup) {
+            if (rule.getComponent() instanceof RuleLayoutGroup) {
                 int position = getPosition(anchorComponentRect, rule.getAnchorComponent(), rule.getAnchorEdge());
                 setPosition(componentRect, rule.getComponent(), rule.getEdge(), position + rule.getOffset());
             } else {
@@ -154,8 +154,8 @@ public class ConstraintLayout implements LayoutManager2 {
     }
 
     ComponentRect getRect(Component component) {
-        if (component instanceof ConstraintLayoutGroup && groups.contains(component)) {
-            ConstraintLayoutGroup group = (ConstraintLayoutGroup) component;
+        if (component instanceof RuleLayoutGroup && groups.contains(component)) {
+            RuleLayoutGroup group = (RuleLayoutGroup) component;
             return group.getRect();
         }
         ComponentRect rect = componentRectangleMap.get(component);
@@ -192,7 +192,7 @@ public class ConstraintLayout implements LayoutManager2 {
     }
 
     private void setPosition(ComponentRect rect, Component component, Edge edge, int value) {
-        if (component instanceof ConstraintLayoutGroup) {
+        if (component instanceof RuleLayoutGroup) {
             int diffX = 0;
             int diffY = 0;
             switch (edge) {
@@ -223,7 +223,7 @@ public class ConstraintLayout implements LayoutManager2 {
             }
 
 
-            ((ConstraintLayoutGroup) component).moveChildren(diffX, diffY);
+            ((RuleLayoutGroup) component).moveChildren(diffX, diffY);
         } else {
             switch (edge) {
                 case LEFT: {

@@ -1,6 +1,6 @@
 package com.swinglayoutbuilder;
 
-import com.swinglayoutbuilder.constraintlayout.Edge;
+import com.swinglayoutbuilder.rulelayout.Edge;
 import org.junit.Ignore;
 import org.junit.Test;
 
