@@ -3,7 +3,7 @@ package com.swinglayoutbuilder;
 import javax.swing.*;
 import java.awt.*;
 
-public class RowWithWrappingBuilder extends AbstractBuilder {
+public class RowWithWrappingBuilder extends AbstractBuilder<RowWithWrappingBuilder> {
 
     private final FlowLayout layout;
     private Component currentComponent;
@@ -14,6 +14,7 @@ public class RowWithWrappingBuilder extends AbstractBuilder {
         layout.setHgap(0);
         layout.setVgap(0);
         container.setLayout(layout);
+        currentComponent = container;
     }
 
     public RowWithWrappingBuilder componentPlacementDirection(ComponentOrientation direction) {
@@ -48,7 +49,7 @@ public class RowWithWrappingBuilder extends AbstractBuilder {
     }
 
     public RowWithWrappingBuilder add(JComponent component) {
-        container.add(component);
+        add(container, component, null);
         currentComponent = component;
         return this;
     }

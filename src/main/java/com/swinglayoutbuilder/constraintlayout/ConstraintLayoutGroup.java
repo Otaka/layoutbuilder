@@ -1,6 +1,6 @@
 package com.swinglayoutbuilder.constraintlayout;
 
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +19,9 @@ public class ConstraintLayoutGroup extends Component {
     }
 
     public ComponentRect getRect() {
-        int minX = 0, minY = 0, maxX = 0, maxY = 0;
+        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
         for (Component component : children) {
-            ComponentRect rect=owner.getRect(component);
+            ComponentRect rect = owner.getRect(component);
             if (rect.getX() < minX) {
                 minX = rect.getX();
             }
@@ -38,6 +38,14 @@ public class ConstraintLayoutGroup extends Component {
 
         rectangle.reset(minX, minY, maxX - minX, maxY - minY);
         return rectangle;
+    }
+
+    public void moveChildren(int x, int y) {
+        for (Component component : children) {
+            ComponentRect rect = owner.getRect(component);
+            rect.moveX(rect.getX() + x);
+            rect.moveY(rect.getY() + y);
+        }
     }
 
     public List<Component> getChildren() {

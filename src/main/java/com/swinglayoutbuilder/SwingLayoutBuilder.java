@@ -1,7 +1,6 @@
 package com.swinglayoutbuilder;
 
 import javax.swing.*;
-import java.awt.Component;
 import java.awt.Container;
 
 public class SwingLayoutBuilder {
@@ -23,7 +22,8 @@ public class SwingLayoutBuilder {
         return new BorderLayoutBuilder(container);
     }
 
-    public ConstraintLayoutBuilder constraintLayout() {
+    public ConstraintLayoutBuilder ruleLayout() {
+
         return new ConstraintLayoutBuilder(container);
     }
 

@@ -5,7 +5,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 
-public class BorderLayoutBuilder extends AbstractBuilder {
+public class BorderLayoutBuilder extends AbstractBuilder<BorderLayoutBuilder> {
     private final BorderLayout layout;
     private Component currentComponent;
 
@@ -13,6 +13,7 @@ public class BorderLayoutBuilder extends AbstractBuilder {
         super(container);
         layout = new BorderLayout(0, 0);
         container.setLayout(layout);
+        currentComponent=container;
     }
 
     public BorderLayoutBuilder gapBetweenComponents(int hor, int ver) {
@@ -22,31 +23,31 @@ public class BorderLayoutBuilder extends AbstractBuilder {
     }
 
     public BorderLayoutBuilder addToCenter(Component component) {
-        container.add(component);
+        add(container, component, BorderLayout.CENTER);
         currentComponent = component;
         return this;
     }
 
     public BorderLayoutBuilder addToLeft(Component component) {
-        container.add(component, BorderLayout.WEST);
+        add(container, component, BorderLayout.WEST);
         currentComponent = component;
         return this;
     }
 
     public BorderLayoutBuilder addToRight(Component component) {
-        container.add(component, BorderLayout.EAST);
+        add(container, component, BorderLayout.EAST);
         currentComponent = component;
         return this;
     }
 
     public BorderLayoutBuilder addToTop(Component component) {
-        container.add(component, BorderLayout.NORTH);
+        add(container, component, BorderLayout.NORTH);
         currentComponent = component;
         return this;
     }
 
     public BorderLayoutBuilder addToBottom(Component component) {
-        container.add(component, BorderLayout.SOUTH);
+        add(container, component, BorderLayout.SOUTH);
         currentComponent = component;
         return this;
     }

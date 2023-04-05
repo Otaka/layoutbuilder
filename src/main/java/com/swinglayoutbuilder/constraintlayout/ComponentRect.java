@@ -18,8 +18,15 @@ public class ComponentRect {
         this.y = y;
         this.width = width;
         this.height = height;
+        x1Set = false;
+        y1Set = false;
         x2Set = false;
         y2Set = false;
+    }
+
+    public void fixX1Y1Position() {
+        x1Set = true;
+        y1Set = true;
     }
 
     public int getX() {
@@ -121,4 +128,8 @@ public class ComponentRect {
         }
     }
 
+    @Override
+    public String toString() {
+        return "[x:" + x + ", y:" + y + " w:" + width + " h:" + height + "]";
+    }
 }

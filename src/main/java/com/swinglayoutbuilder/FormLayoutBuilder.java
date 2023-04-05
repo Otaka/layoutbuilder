@@ -4,24 +4,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Simple layout that puts components in two columns(label:field)
  */
-public class FormLayoutBuilder extends AbstractBuilder {
+public class FormLayoutBuilder extends AbstractBuilder<FormLayoutBuilder> {
     private boolean labelLeftAlignment = true;
     private List<Pair> currentColumn;
     private final List<List<Pair>> columns = new ArrayList<>();
     private int gapLabelToComponent = 5;
     private int gapBetweenRows = 5;
     private int gapBetweenColumns = 20;
-    private Function<String, Component> labelFactory;
+    private LabelFactory labelFactory;
     private Component currentComponent;
 
     protected FormLayoutBuilder(Container container) {
         super(container);
-        labelFactory = JLabel::new;
+        labelFactory = new LabelFactory() {
+            @Override
+            public Component create(String text) {
+                return new JLabel(text);
+            }
+        };
+        currentComponent = container;
         newColumn();
     }
 
@@ -32,10 +37,10 @@ public class FormLayoutBuilder extends AbstractBuilder {
     }
 
     /**
-     * Function that accepts String labelTitle and returns label component
+     * Label factory that accepts String labelTitle and returns label component
      */
-    public FormLayoutBuilder labelFactory(Function<String, Component> labelFactoryFunction) {
-        this.labelFactory = labelFactoryFunction;
+    public FormLayoutBuilder labelFactory(LabelFactory labelFactory) {
+        this.labelFactory = labelFactory;
         return this;
     }
 
@@ -106,7 +111,7 @@ public class FormLayoutBuilder extends AbstractBuilder {
     }
 
     private Component createLabel(String labelTitle) {
-        return labelFactory.apply(labelTitle);
+        return labelFactory.create(labelTitle);
     }
 
     @Override
@@ -129,8 +134,8 @@ public class FormLayoutBuilder extends AbstractBuilder {
                 container.add(paddingPanel, c);
             }
             for (Pair pair : currentColumn) {
-                if(pair.label!=null) {
-                    int rowTopInsets=row>0?gapBetweenRows:0;
+                if (pair.label != null) {
+                    int rowTopInsets = row > 0 ? gapBetweenRows : 0;
                     GridBagConstraints c = new GridBagConstraints();
                     c.fill = GridBagConstraints.NONE;
                     c.gridx = column * 3;
@@ -138,7 +143,7 @@ public class FormLayoutBuilder extends AbstractBuilder {
                     c.anchor = labelLeftAlignment ? GridBagConstraints.BASELINE_LEADING : GridBagConstraints.BASELINE_TRAILING;
 
                     c.insets = new Insets(rowTopInsets, 0, 0, gapLabelToComponent);
-                    container.add(pair.label, c);
+                    add(container, pair.label, c);
 
                     c = new GridBagConstraints();
                     c.gridx = column * 3 + 1;
@@ -146,16 +151,16 @@ public class FormLayoutBuilder extends AbstractBuilder {
                     c.anchor = GridBagConstraints.BASELINE_LEADING;
                     c.insets = new Insets(rowTopInsets, 0, 0, 0);
                     c.fill = GridBagConstraints.NONE;
-                    container.add(pair.field, c);
-                }else{
+                    add(container, pair.field, c);
+                } else {
                     GridBagConstraints c = new GridBagConstraints();
                     c.gridx = column * 3;
                     c.gridy = row;
-                    c.gridwidth=2;
+                    c.gridwidth = 2;
                     c.anchor = GridBagConstraints.BASELINE_LEADING;
                     c.insets = new Insets(0, 0, 0, 0);
                     c.fill = GridBagConstraints.NONE;
-                    container.add(pair.field, c);
+                    add(container, pair.field, c);
                 }
                 row++;
             }
@@ -173,5 +178,9 @@ public class FormLayoutBuilder extends AbstractBuilder {
             this.label = label;
             this.field = field;
         }
+    }
+
+    public interface LabelFactory {
+        Component create(String text);
     }
 }
