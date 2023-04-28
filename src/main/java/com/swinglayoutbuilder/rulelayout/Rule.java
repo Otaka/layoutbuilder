@@ -1,26 +1,19 @@
 package com.swinglayoutbuilder.rulelayout;
 
-import javax.swing.*;
-import java.awt.Component;
-
 public class Rule {
     private final Edge anchorEdge;
-    private final Component anchorComponent;
+    private final Object anchorComponent;
     private final Edge edge;
-    private Component component;
+    private final Object component;
     private final int offset;
 
 
-    public Rule(Edge anchorEdge, Component anchorComponent, int offset, Edge edge, Component component) {
+    public Rule(Edge anchorEdge, Object anchorComponent, int offset, Edge edge, Object component) {
         this.anchorEdge = anchorEdge;
         this.anchorComponent = anchorComponent;
         this.edge = edge;
         this.component = component;
         this.offset = offset;
-    }
-
-    public void setComponent(JComponent component) {
-        this.component = component;
     }
 
     public int getOffset() {
@@ -31,7 +24,7 @@ public class Rule {
         return anchorEdge;
     }
 
-    public Component getAnchorComponent() {
+    public Object getAnchorComponent() {
         return anchorComponent;
     }
 
@@ -39,8 +32,7 @@ public class Rule {
         return edge;
     }
 
-    public Component getComponent() {
+    public Object getComponent() {
         return component;
     }
-
 }

@@ -33,7 +33,7 @@ public class SwingLayoutBuilderTest {
                 .rowAlignmentRight()
                 .baseLineAlignment(true)
                 .componentPlacementDirection(ComponentOrientation.RIGHT_TO_LEFT)
-                .add(createColorBlock("Comp1", Color.LIGHT_GRAY))
+                .add(setPreferredSize(createColorBlock("Comp1", Color.LIGHT_GRAY), 40, 50))
                 .add(createColorBlock("Comp2", Color.CYAN))
                 .add(createColorBlock("Comp3", Color.GREEN))
                 .finish();
@@ -66,9 +66,9 @@ public class SwingLayoutBuilderTest {
 
     @Test
     @Ignore
-    public void constraintLayout() {
+    public void ruleLayout() {
         JFrame frame = createJFrame("Constraint layout");
-        new SwingLayoutBuilder(frame).ruleLayout()
+        new SwingLayoutBuilder(frame).ruleLayout().parentPadding(10, 10, 10, 10)
                 .add(createColorBlock("1 component", Color.WHITE)).preferredSize(100, 100)
                 .add(createColorBlock("2 component", Color.YELLOW)).preferredSize(100, 100)
                 .moveToPrevious(Edge.TOP, Edge.BOTTOM, 5)
@@ -97,7 +97,6 @@ public class SwingLayoutBuilderTest {
         JFrame frame = createJFrame("Constraint layout center");
         new SwingLayoutBuilder(frame).ruleLayout().preferredSize(200, 200)
                 .add(createColorBlock("1 component", Color.WHITE))
-
                 .moveToParent(Edge.HOR_CENTER, Edge.HOR_CENTER, 0)
                 .moveToParent(Edge.VER_CENTER, Edge.VER_CENTER, 0)
                 .finish();
@@ -108,7 +107,7 @@ public class SwingLayoutBuilderTest {
     @Ignore
     public void constraintLayout_form() {
         JFrame frame = createJFrame("Constraint layout. Form");
-        new SwingLayoutBuilder(frame).ruleLayout().debug(true).globalMargin(10, 10, 10, 10).gapBetweenComponents(10)
+        new SwingLayoutBuilder(frame).ruleLayout().debug(true).parentPadding(10, 10, 10, 10)
                 .createGroup("mygroup")
                 .add(new JLabel("mylabel"))
                 .addToCurrentGroup()
@@ -119,7 +118,24 @@ public class SwingLayoutBuilderTest {
                 .moveToPrevious(Edge.BOTTOM, Edge.BOTTOM, 0)//align text field to the label bottom position(just to show how group moving works)
                 .moveToPrevious(Edge.LEFT, Edge.RIGHT)//and put it right from the label
                 .moveIdToParent("mygroup", Edge.TOP, Edge.TOP, 0)//adjust group position
+                .finish();
+        showFrame(frame);
+    }
 
+    @Test
+    @Ignore
+    public void constraintLayout_formTemplate() {
+        JFrame frame = createJFrame("Constraint layout. Form Template");
+        new SwingLayoutBuilder(frame).ruleLayout().debug(true).parentPadding(10, 10, 10, 10)
+                .templateForm(5, (t, ruleLayout) -> {
+                    t.setAlignLabelsLeft(false);
+                    t.setRowsGap(5);
+                    t.addRow("label1 jhkh", setPreferredSize(createColorBlock("component1", Color.GREEN), 100, 50));
+                    t.addRow("label2", setPreferredSize(new JEditorPane("text/plain", "hello world"), 300, 100))
+                            .setLabelToFieldVerticalAlignment(RuleLayoutBuilder.FormRowAlignment.TOP);
+                    t.addRow("la3", setPreferredSize(createColorBlock("component3", Color.BLUE), 100, 30));
+                    ruleLayout.anchorCurrentComponentEdgesToParentMovingEdges(false, false,true,false);
+                }).moveToParent(Edge.LEFT, Edge.LEFT, 0)
                 .finish();
         showFrame(frame);
     }
@@ -128,7 +144,7 @@ public class SwingLayoutBuilderTest {
     @Ignore
     public void constraintLayout_CenterGroup() {
         JFrame frame = createJFrame("Constraint layout. Center group");
-        new SwingLayoutBuilder(frame).ruleLayout().gapBetweenComponents(0).preferredSize(300, 300)
+        new SwingLayoutBuilder(frame).ruleLayout().preferredSize(300, 300)
                 .createGroup("mygroup")
                 .add(createColorBlock("A", Color.GREEN)).preferredSize(50, 50)
                 .addToCurrentGroup()
@@ -138,6 +154,29 @@ public class SwingLayoutBuilderTest {
                 .moveToPrevious(Edge.TOP, Edge.BOTTOM, 5)
                 .moveIdToParent("mygroup", Edge.HOR_CENTER, Edge.HOR_CENTER)
                 .moveIdToParent("mygroup", Edge.VER_CENTER, Edge.VER_CENTER)
+                .finish();
+        showFrame(frame);
+    }
+
+    @Test
+    @Ignore
+    public void constraintLayout_padding() {
+        JFrame frame = createJFrame("Constraint layout. Padding");
+        new SwingLayoutBuilder(frame).ruleLayout().parentPadding(10, 20, 30, 40)
+                .add(createColorBlock("A", Color.GREEN)).preferredSize(150, 150)
+                .moveToParent(Edge.LEFT, Edge.LEFT, 0)
+                .finish();
+        showFrame(frame);
+    }
+
+    @Test
+    @Ignore
+    public void constraintLayout_resizing_anchors() {
+        JFrame frame = createJFrame("Constraint layout. Anchor and resize");
+        new SwingLayoutBuilder(frame).ruleLayout().parentPadding(10, 20, 30, 40)
+                .add(createColorBlock("A", Color.GREEN)).preferredSize(150, 150)
+                .moveToParent(Edge.LEFT, Edge.LEFT, 0)
+                .anchorCurrentComponentEdgesToParentMovingEdges(false,false,true,true, 0.5f, 0.5f, 1f, 0.5f)
                 .finish();
         showFrame(frame);
     }
@@ -157,15 +196,15 @@ public class SwingLayoutBuilderTest {
         return frame;
     }
 
+    public JComponent setPreferredSize(JComponent component, int width, int height) {
+        component.setPreferredSize(new Dimension(width, height));
+        return component;
+    }
+
     private void showFrame(final Window frame) {
         frame.pack();
         frame.setLocationRelativeTo(null);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                frame.setVisible(true);
-            }
-        });
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
         try {
             Thread.sleep(999999);
         } catch (InterruptedException e) {

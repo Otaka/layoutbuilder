@@ -173,4 +173,26 @@ You can move the group like any other components, referencing it by id. But grou
 * it does not have baseline
 * you cannot change height or width of the group
 
-Other things like moving edges LEFT/RIGHT/HOR_CENTER/VER_CENTER works just fine. 
+Other things like moving edges LEFT/RIGHT/HOR_CENTER/VER_CENTER works fine.
+
+### Resizing
+It is possible to configure some simple way of resizing components with the parent container. It is a little bit similar to Delphi anchors mechanism.
+
+You can specify that Left or Right edges of component are anchored to Right edge of parent container. The same for Top, Bottom edges, they can be anchored to container's Bottom edge.
+
+```java
+new SwingLayoutBuilder(frame).ruleLayout()
+                .add(new JTextPane()).preferredSize(150, 150)
+                .anchorCurrentComponentEdgesToParentMovingEdges(false,false,true,true)//we want to resize Right and Bottom edges
+                .finish();
+```
+
+It is possible to comfigure multiplier for resizing. 
+Example:
+```java
+new SwingLayoutBuilder(frame).ruleLayout()
+                .add(new JTextPane()).preferredSize(150, 150)
+                .anchorCurrentComponentEdgesToParentMovingEdges(false,false,true,true,0,0,0.5f,0.5f)
+                .finish();
+```
+In this example we will automatically move Right and Bottom edge of component after the frame resizing, but we will move it only by half of the parent container's size change.
