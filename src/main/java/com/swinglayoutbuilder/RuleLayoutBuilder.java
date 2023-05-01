@@ -1,51 +1,52 @@
 package com.swinglayoutbuilder;
 
-import com.swinglayoutbuilder.rulelayout.Edge;
-import com.swinglayoutbuilder.rulelayout.LayoutGroup;
-import com.swinglayoutbuilder.rulelayout.Rule;
-import com.swinglayoutbuilder.rulelayout.RuleLayout;
+import com.swinglayoutbuilder.rulelayout.*;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
-
-    private Object previousComponent;
-    private Object currentComponent;
-    private Object anchor1Component;
-    private Object anchor2Component;
-    private Object anchor3Component;
-    private LayoutGroup currentGroup;
-    private final Map<String, Object> id2ComponentMap = new HashMap<>();
+@SuppressWarnings({"unused", "UnusedReturnValue"})
+public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> {
+    private ComponentWrapper<T> container;
+    private ComponentWrapper<T> previousComponent;
+    private ComponentWrapper<T> currentComponent;
+    private ComponentWrapper<T> anchor1Component;
+    private ComponentWrapper<T> anchor2Component;
+    private ComponentWrapper<T> anchor3Component;
+    private LayoutGroup<T> currentGroup;
+    private final Map<String, ComponentWrapper<T>> id2ComponentMap = new HashMap<>();
     private final RuleLayout layout;
 
 
     protected RuleLayoutBuilder(Container container) {
         super(container);
+        this.container = new ComponentWrapper<T>((T) container);
         layout = new RuleLayout(container);
         container.setLayout(layout);
-        currentComponent = container;
+        currentComponent = this.container;
     }
 
-    public RuleLayoutBuilder createGroup(String id) {
-        LayoutGroup group = layout.createGroup();
+    public RuleLayoutBuilder<T> createGroup(String id) {
+        LayoutGroup<T> group = (LayoutGroup<T>) layout.createGroup();
         if (id2ComponentMap.containsKey(id)) {
             throw new IllegalArgumentException("Component/group with id [" + id + "] is already present in builder");
         }
 
         currentGroup = group;
-        id2ComponentMap.put(id, currentGroup);
+        id2ComponentMap.put(id, new ComponentWrapper<>(currentGroup));
         return this;
     }
 
     /**
      * Add current component to current group
      */
-    public RuleLayoutBuilder addToCurrentGroup() {
+    public RuleLayoutBuilder<T> addToCurrentGroup() {
         checkCurrentComponent();
         checkCurrentGroup();
         currentGroup.addComponent(currentComponent);
@@ -55,12 +56,12 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Add component with id componentId to group with id groupId
      */
-    public RuleLayoutBuilder addToGroup(String componentId, String groupId) {
-        Object componentToAdd = getComponentById(componentId);
-        Object groupComponent = getComponentById(groupId);
+    public RuleLayoutBuilder<T> addToGroup(String componentId, String groupId) {
+        ComponentWrapper<T> componentToAdd = getComponentById(componentId);
+        ComponentWrapper<T> groupComponent = getComponentById(groupId);
 
-        if (groupComponent instanceof LayoutGroup) {
-            LayoutGroup group = (LayoutGroup) groupComponent;
+        if (groupComponent.isGroup()) {
+            LayoutGroup<T> group = groupComponent.getGroup();
             group.addComponent(componentToAdd);
         } else {
             throw new IllegalArgumentException("Component with id [" + groupId + "] is not group");
@@ -72,11 +73,11 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Add current component to group with id groupId
      */
-    public RuleLayoutBuilder addToGroup(String groupId) {
+    public RuleLayoutBuilder<T> addToGroup(String groupId) {
         checkCurrentComponent();
-        Object groupComponent = getComponentById(groupId);
-        if (groupComponent instanceof LayoutGroup) {
-            LayoutGroup group = (LayoutGroup) groupComponent;
+        ComponentWrapper<T> groupComponent = getComponentById(groupId);
+        if (groupComponent.isGroup()) {
+            LayoutGroup<T> group = groupComponent.getGroup();
             group.addComponent(currentComponent);
         } else {
             throw new IllegalArgumentException("Component with id [" + groupId + "] is not group");
@@ -86,12 +87,12 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     }
 
 
-    public RuleLayoutBuilder parentPadding(int left, int top, int right, int bottom) {
+    public RuleLayoutBuilder<T> parentPadding(int left, int top, int right, int bottom) {
         layout.setPadding(left, top, right, bottom);
         return this;
     }
 
-    public RuleLayoutBuilder id(String id) {
+    public RuleLayoutBuilder<T> id(String id) {
         checkCurrentComponent();
         if (id2ComponentMap.containsKey(id)) {
             throw new IllegalArgumentException("Component/group with id [" + id + "] is already present in builder");
@@ -101,52 +102,53 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
         return this;
     }
 
-    public RuleLayoutBuilder anchor1() {
+    public RuleLayoutBuilder<T> anchor1() {
         checkCurrentComponent();
         anchor1Component = currentComponent;
         return this;
     }
 
-    public RuleLayoutBuilder anchor2() {
+    public RuleLayoutBuilder<T> anchor2() {
         checkCurrentComponent();
         anchor2Component = currentComponent;
         return this;
     }
 
-    public RuleLayoutBuilder anchor3() {
+    public RuleLayoutBuilder<T> anchor3() {
         checkCurrentComponent();
         anchor3Component = currentComponent;
         return this;
     }
 
-    public RuleLayoutBuilder setCurrentComponent(Object component) {
+    public RuleLayoutBuilder<T> setCurrentComponent(ComponentWrapper<T> component) {
         previousComponent = currentComponent;
         currentComponent = component;
         return this;
     }
 
-    public RuleLayoutBuilder add(Component component) {
+    public RuleLayoutBuilder<T> add(T component) {
         add(null, component);
         return this;
     }
 
-    public RuleLayoutBuilder add(String id, Object component) {
+    public RuleLayoutBuilder<T> add(String id, T component) {
         if (!(component instanceof LayoutGroup)) {
-            add(container, (Component) component, null);
+            add((Container) container.getComponent(), (Component) component, null);
         }
-        setCurrentComponent(component);
+        ComponentWrapper<T> c = new ComponentWrapper<T>(component);
+        setCurrentComponent(c);
         if (id != null) {
             id(id);
         }
         return this;
     }
 
-    public RuleLayoutBuilder move(Object component, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder<T> move(ComponentWrapper<T> component, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         layout.addRule(new Rule(anchorEdge, getComponentById(anchorComponentId), gap, edge, component));
         return this;
     }
 
-    public RuleLayoutBuilder move(Object component, Edge edge, Object anchorComponent, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder<T> move(ComponentWrapper<T> component, Edge edge, Object anchorComponent, Edge anchorEdge, int gap) {
         layout.addRule(new Rule(anchorEdge, anchorComponent, gap, edge, component));
         return this;
     }
@@ -154,14 +156,14 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move parent edge to some other component edge by id
      */
-    public RuleLayoutBuilder moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
+    public RuleLayoutBuilder<T> moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
         return move(container, edge, anchorComponentId, anchorEdge, 0);
     }
 
     /**
      * Move parent edge to other component edge by id
      */
-    public RuleLayoutBuilder moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder<T> moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         return move(container, edge, anchorComponentId, anchorEdge, gap);
     }
 
@@ -169,7 +171,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move parent edge to current component edge
      */
-    public RuleLayoutBuilder moveParentToCurrent(Edge edge, Edge previousComponentEdge) {
+    public RuleLayoutBuilder<T> moveParentToCurrent(Edge edge, Edge previousComponentEdge) {
         checkCurrentComponent();
         layout.addRule(new Rule(previousComponentEdge, currentComponent, 0, edge, container));
         return this;
@@ -178,7 +180,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move parent edge to current component edge
      */
-    public RuleLayoutBuilder moveParentToCurrent(Edge edge, Edge previousComponentEdge, int gap) {
+    public RuleLayoutBuilder<T> moveParentToCurrent(Edge edge, Edge previousComponentEdge, int gap) {
         checkCurrentComponent();
         layout.addRule(new Rule(previousComponentEdge, currentComponent, gap, edge, container));
         return this;
@@ -187,7 +189,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to other component with id anchorComponentId
      */
-    public RuleLayoutBuilder moveToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
+    public RuleLayoutBuilder<T> moveToId(Edge edge, String anchorComponentId, Edge anchorEdge) {
         checkCurrentComponent();
         return move(currentComponent, edge, anchorComponentId, anchorEdge, 0);
     }
@@ -195,7 +197,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to other component with id anchorComponentId
      */
-    public RuleLayoutBuilder moveToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+    public RuleLayoutBuilder<T> moveToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         checkCurrentComponent();
         return move(currentComponent, edge, anchorComponentId, anchorEdge, gap);
     }
@@ -203,23 +205,23 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move component with id componentId to other component with id anchorComponentId
      */
-    public RuleLayoutBuilder moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge) {
-        Object component = getComponentById(componentId);
+    public RuleLayoutBuilder<T> moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge) {
+        ComponentWrapper<T> component = getComponentById(componentId);
         return move(component, edge, anchorComponentId, anchorEdge, 0);
     }
 
     /**
      * Move component with id componentId to other component with id anchorComponentId
      */
-    public RuleLayoutBuilder moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
-        Object component = getComponentById(componentId);
+    public RuleLayoutBuilder<T> moveIdToId(String componentId, Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
+        ComponentWrapper<T> component = getComponentById(componentId);
         return move(component, edge, anchorComponentId, anchorEdge, gap);
     }
 
     /**
      * Move current component to parent component
      */
-    public RuleLayoutBuilder moveToParent(Edge edge, Edge parentEdge) {
+    public RuleLayoutBuilder<T> moveToParent(Edge edge, Edge parentEdge) {
         checkCurrentComponent();
         layout.addRule(new Rule(parentEdge, container, 0, edge, currentComponent));
         return this;
@@ -228,7 +230,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to parent component
      */
-    public RuleLayoutBuilder moveToParent(Edge edge, Edge parentEdge, int gap) {
+    public RuleLayoutBuilder<T> moveToParent(Edge edge, Edge parentEdge, int gap) {
         checkCurrentComponent();
         layout.addRule(new Rule(parentEdge, container, gap, edge, currentComponent));
         return this;
@@ -237,8 +239,8 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to parent component
      */
-    public RuleLayoutBuilder moveIdToParent(String componentId, Edge edge, Edge parentEdge, int gap) {
-        Object component = getComponentById(componentId);
+    public RuleLayoutBuilder<T> moveIdToParent(String componentId, Edge edge, Edge parentEdge, int gap) {
+        ComponentWrapper<T> component = getComponentById(componentId);
         layout.addRule(new Rule(parentEdge, container, gap, edge, component));
         return this;
     }
@@ -246,8 +248,8 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move component with id componentId to parent component
      */
-    public RuleLayoutBuilder moveIdToParent(String componentId, Edge edge, Edge parentEdge) {
-        Object component = getComponentById(componentId);
+    public RuleLayoutBuilder<T> moveIdToParent(String componentId, Edge edge, Edge parentEdge) {
+        ComponentWrapper<T> component = getComponentById(componentId);
         layout.addRule(new Rule(parentEdge, container, 0, edge, component));
         return this;
     }
@@ -255,7 +257,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to previous component
      */
-    public RuleLayoutBuilder moveToPrevious(Edge edge, Edge previousComponentEdge) {
+    public RuleLayoutBuilder<T> moveToPrevious(Edge edge, Edge previousComponentEdge) {
         checkCurrentComponent();
         checkPreviousComponent();
         layout.addRule(new Rule(previousComponentEdge, previousComponent, 0, edge, currentComponent));
@@ -265,7 +267,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to previous component
      */
-    public RuleLayoutBuilder moveToPrevious(Edge edge, Edge previousComponentEdge, int gap) {
+    public RuleLayoutBuilder<T> moveToPrevious(Edge edge, Edge previousComponentEdge, int gap) {
         checkCurrentComponent();
         checkPreviousComponent();
         layout.addRule(new Rule(previousComponentEdge, previousComponent, gap, edge, currentComponent));
@@ -275,7 +277,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to anchor1 component
      */
-    public RuleLayoutBuilder moveToAnchor1(Edge edge, Edge anchor1ComponentEdge) {
+    public RuleLayoutBuilder<T> moveToAnchor1(Edge edge, Edge anchor1ComponentEdge) {
         checkCurrentComponent();
         checkAnchor1Component();
         layout.addRule(new Rule(anchor1ComponentEdge, anchor1Component, 0, edge, currentComponent));
@@ -285,7 +287,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to anchor1 component
      */
-    public RuleLayoutBuilder moveToAnchor1(Edge edge, Edge anchor1ComponentEdge, int gap) {
+    public RuleLayoutBuilder<T> moveToAnchor1(Edge edge, Edge anchor1ComponentEdge, int gap) {
         checkCurrentComponent();
         checkAnchor1Component();
         layout.addRule(new Rule(anchor1ComponentEdge, anchor1Component, gap, edge, currentComponent));
@@ -295,7 +297,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to anchor2 component
      */
-    public RuleLayoutBuilder moveToAnchor2(Edge edge, Edge anchor2ComponentEdge) {
+    public RuleLayoutBuilder<T> moveToAnchor2(Edge edge, Edge anchor2ComponentEdge) {
         checkCurrentComponent();
         checkAnchor2Component();
         layout.addRule(new Rule(anchor2ComponentEdge, anchor2Component, 0, edge, currentComponent));
@@ -305,7 +307,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to anchor2 component
      */
-    public RuleLayoutBuilder moveToAnchor2(Edge edge, Edge anchor2ComponentEdge, int gap) {
+    public RuleLayoutBuilder<T> moveToAnchor2(Edge edge, Edge anchor2ComponentEdge, int gap) {
         checkCurrentComponent();
         checkAnchor2Component();
         layout.addRule(new Rule(anchor2ComponentEdge, anchor2Component, gap, edge, currentComponent));
@@ -315,7 +317,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to anchor3 component
      */
-    public RuleLayoutBuilder moveToAnchor3(Edge edge, Edge anchor3ComponentEdge) {
+    public RuleLayoutBuilder<T> moveToAnchor3(Edge edge, Edge anchor3ComponentEdge) {
         checkCurrentComponent();
         checkAnchor3Component();
         layout.addRule(new Rule(anchor3ComponentEdge, anchor3Component, 0, edge, currentComponent));
@@ -325,7 +327,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Move current component to anchor3 component
      */
-    public RuleLayoutBuilder moveToAnchor3(Edge edge, Edge anchor3ComponentEdge, int gap) {
+    public RuleLayoutBuilder<T> moveToAnchor3(Edge edge, Edge anchor3ComponentEdge, int gap) {
         checkCurrentComponent();
         checkAnchor3Component();
         layout.addRule(new Rule(anchor3ComponentEdge, anchor3Component, gap, edge, currentComponent));
@@ -335,9 +337,9 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Set preferred size of last added component, or for parent in case if no components are added yet
      */
-    public RuleLayoutBuilder preferredSize(int width, int height) {
-        if (currentComponent instanceof Component) {
-            ((Component) currentComponent).setPreferredSize(new Dimension(width, height));
+    public RuleLayoutBuilder<T> preferredSize(int width, int height) {
+        if (!currentComponent.isGroup()) {
+            layout.setPreferredSize(currentComponent.getComponent(), new Dimension(width, height));
         }
         return this;
     }
@@ -345,47 +347,48 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
     /**
      * Set minimum size of last added component
      */
-    public RuleLayoutBuilder minimumSize(int width, int height) {
-        if (currentComponent instanceof Component) {
-            ((Component) currentComponent).setMinimumSize(new Dimension(width, height));
+    public RuleLayoutBuilder<T> minimumSize(int width, int height) {
+        if (!currentComponent.isGroup()) {
+            layout.setMinimumSize(currentComponent.getComponent(), new Dimension(width, height));
         }
         return this;
     }
 
-    public RuleLayoutBuilder anchorCurrentComponentEdgesToParentMovingEdges(boolean left, boolean top, boolean right, boolean bottom) {
+    public RuleLayoutBuilder<T> anchorCurrentComponentEdgesToParentMovingEdges(boolean left, boolean top, boolean right, boolean bottom) {
         checkCurrentComponent();
-        layout.setComponentEdgeAnchoredToParentMovingEdge((Component) currentComponent, left, top, right, bottom, 1, 1, 1, 1);
+        layout.setComponentEdgeAnchoredToParentMovingEdge(currentComponent, left, top, right, bottom, 1, 1, 1, 1);
         return this;
     }
 
-    public RuleLayoutBuilder anchorCurrentComponentEdgesToParentMovingEdges(boolean left, boolean top, boolean right, boolean bottom, float leftMultiplier, float topMultiplier, float rightMultiplier, float bottomMultiplier) {
+    public RuleLayoutBuilder<T> anchorCurrentComponentEdgesToParentMovingEdges(boolean left, boolean top, boolean right, boolean bottom, float leftMultiplier, float topMultiplier, float rightMultiplier, float bottomMultiplier) {
         checkCurrentComponent();
         layout.setComponentEdgeAnchoredToParentMovingEdge(currentComponent, left, top, right, bottom, leftMultiplier, topMultiplier, rightMultiplier, bottomMultiplier);
         return this;
     }
 
-    public RuleLayoutBuilder anchorComponentIdEdgesToParentMovingEdges(String componentId, boolean left, boolean top, boolean right, boolean bottom) {
+    public RuleLayoutBuilder<T> anchorComponentIdEdgesToParentMovingEdges(String componentId, boolean left, boolean top, boolean right, boolean bottom) {
         layout.setComponentEdgeAnchoredToParentMovingEdge(getComponentById(componentId), left, top, right, bottom, 1, 1, 1, 1);
         return this;
     }
 
-    public RuleLayoutBuilder anchorComponentIdEdgesToParentMovingEdges(String componentId, boolean left, boolean top, boolean right, boolean bottom, float leftMultiplier, float topMultiplier, float rightMultiplier, float bottomMultiplier) {
+    public RuleLayoutBuilder<T> anchorComponentIdEdgesToParentMovingEdges(String componentId, boolean left, boolean top, boolean right, boolean bottom, float leftMultiplier, float topMultiplier, float rightMultiplier, float bottomMultiplier) {
         layout.setComponentEdgeAnchoredToParentMovingEdge(getComponentById(componentId), left, top, right, bottom, leftMultiplier, topMultiplier, rightMultiplier, bottomMultiplier);
         return this;
     }
 
-    public RuleLayoutBuilder templateForm(int labelToComponentDistance, FormTemplateProvider templateInitializer) {
-        FormTemplate formTemplate = new FormTemplate(labelToComponentDistance);
+    public RuleLayoutBuilder<T> templateForm(int labelToComponentDistance, FormTemplateProvider<T> templateInitializer) {
+        FormTemplate<T> formTemplate = new FormTemplate<T>(this, labelToComponentDistance);
         templateInitializer.run(formTemplate, this);
         formTemplate.finish();
         return this;
     }
 
-    public interface FormTemplateProvider {
-        void run(FormTemplate formTemplate, RuleLayoutBuilder ruleLayoutBuilder);
+    public interface FormTemplateProvider<T> {
+        void run(FormTemplate<T> formTemplate, RuleLayoutBuilder<T> ruleLayoutBuilder);
     }
 
-    public class FormTemplate {
+    public static class FormTemplate<T> {
+        RuleLayoutBuilder<T> layoutBuilder;
         String formGroupId;
         String labelGroupId;
         String fieldGroupId;
@@ -394,6 +397,11 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
         int rowIndex = 0;
         private boolean alignLabelsLeft = true;
         private final List<Row> rows = new ArrayList<>();
+
+        public FormTemplate(RuleLayoutBuilder<T> layoutBuilder, int labelToComponentDistance) {
+            this.labelToComponentDistance = labelToComponentDistance;
+            this.layoutBuilder = layoutBuilder;
+        }
 
         public void setLabelToComponentDistance(int labelToComponentDistance) {
             this.labelToComponentDistance = labelToComponentDistance;
@@ -407,8 +415,8 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
             if (formGroupId == null) {
                 formGroupId = "FormGroup" + Math.random() * 99999;
             }
-            if (!id2ComponentMap.containsKey(formGroupId)) {
-                createGroup(formGroupId);
+            if (!layoutBuilder.id2ComponentMap.containsKey(formGroupId)) {
+                layoutBuilder.createGroup(formGroupId);
             }
             return formGroupId;
         }
@@ -424,8 +432,8 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
             if (labelGroupId == null) {
                 labelGroupId = "FormLabelsGroup" + Math.random() * 99999;
             }
-            if (!id2ComponentMap.containsKey(labelGroupId)) {
-                createGroup(labelGroupId);
+            if (!layoutBuilder.id2ComponentMap.containsKey(labelGroupId)) {
+                layoutBuilder.createGroup(labelGroupId);
             }
             return labelGroupId;
         }
@@ -441,8 +449,8 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
             if (fieldGroupId == null) {
                 fieldGroupId = "FormFieldGroup" + Math.random() * 99999;
             }
-            if (!id2ComponentMap.containsKey(fieldGroupId)) {
-                createGroup(fieldGroupId);
+            if (!layoutBuilder.id2ComponentMap.containsKey(fieldGroupId)) {
+                layoutBuilder.createGroup(fieldGroupId);
             }
             return fieldGroupId;
         }
@@ -453,51 +461,52 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
             this.fieldGroupId = groupId;
         }
 
-        public FormTemplate(int labelToComponentDistance) {
-            this.labelToComponentDistance = labelToComponentDistance;
-        }
 
         public void setAlignLabelsLeft(boolean alignLabelsLeft) {
             this.alignLabelsLeft = alignLabelsLeft;
         }
 
-        public Row addRow(String label, Component field) {
+        public Row addRow(String label, T field) {
             String rowGroup = "formRowGroup" + rowIndex;
-            createGroup(rowGroup);
-            JLabel labelComponent = new JLabel(label);
-            labelComponent.setLocation(0, 0);
-            add(labelComponent).addToGroup(getFormGroupId()).addToGroup(getLabelGroupId()).addToGroup(rowGroup);
-            add(field).addToGroup(getFormGroupId()).addToGroup(getFieldGroupId()).addToGroup(rowGroup);
-            Row row = new Row(rowGroup, labelComponent, field);
+            layoutBuilder.createGroup(rowGroup);
+
+            T labelComponent = createLabel(layoutBuilder.container, label);
+            layoutBuilder.add(labelComponent).addToGroup(getFormGroupId()).addToGroup(getLabelGroupId()).addToGroup(rowGroup);
+            layoutBuilder.add(field).addToGroup(getFormGroupId()).addToGroup(getFieldGroupId()).addToGroup(rowGroup);
+            Row row = new Row(rowGroup, new ComponentWrapper<>(labelComponent), new ComponentWrapper<>(field));
             rows.add(row);
             rowIndex++;
             return row;
+        }
+
+        private T createLabel(ComponentWrapper<T> container, String text) {
+            return (T) new JLabel(text);
         }
 
         public void finish() {
             //first - align labels and fields horizontally
             for (Row row : rows) {
                 if (alignLabelsLeft) {
-                    move(row.label, Edge.LEFT, id2ComponentMap.get(getLabelGroupId()), Edge.LEFT, 0);
+                    layoutBuilder.move(row.label, Edge.LEFT, layoutBuilder.id2ComponentMap.get(getLabelGroupId()), Edge.LEFT, 0);
                 } else {
-                    move(row.label, Edge.RIGHT, id2ComponentMap.get(getLabelGroupId()), Edge.RIGHT, 0);
+                    layoutBuilder.move(row.label, Edge.RIGHT, layoutBuilder.id2ComponentMap.get(getLabelGroupId()), Edge.RIGHT, 0);
                 }
-                move(row.field, Edge.LEFT, id2ComponentMap.get(getLabelGroupId()), Edge.RIGHT, labelToComponentDistance);
+                layoutBuilder.move(row.field, Edge.LEFT, layoutBuilder.id2ComponentMap.get(getLabelGroupId()), Edge.RIGHT, labelToComponentDistance);
             }
             //align labels to fields
             for (Row row : rows) {
                 switch (row.alignment) {
                     case BASELINE:
-                        move(row.label, Edge.BASELINE, row.field, Edge.BASELINE, 0);
+                        layoutBuilder.move(row.label, Edge.BASELINE, row.field, Edge.BASELINE, 0);
                         break;
                     case TOP:
-                        move(row.label, Edge.TOP, row.field, Edge.TOP, 0);
+                        layoutBuilder.move(row.label, Edge.TOP, row.field, Edge.TOP, 0);
                         break;
                     case BOTTOM:
-                        move(row.label, Edge.BOTTOM, row.field, Edge.BOTTOM, 0);
+                        layoutBuilder.move(row.label, Edge.BOTTOM, row.field, Edge.BOTTOM, 0);
                         break;
                     case CENTER:
-                        move(row.label, Edge.VER_CENTER, row.field, Edge.VER_CENTER, 0);
+                        layoutBuilder.move(row.label, Edge.VER_CENTER, row.field, Edge.VER_CENTER, 0);
                 }
 
             }
@@ -505,20 +514,20 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
             Row previousRow = null;
             for (Row row : rows) {
                 if (previousRow != null) {//we ignore first field, because it is already on top
-                    move(getComponentById(row.rowGroupId), Edge.TOP, getComponentById(previousRow.rowGroupId), Edge.BOTTOM, rowsGap);
+                    layoutBuilder.move(layoutBuilder.getComponentById(row.rowGroupId), Edge.TOP, layoutBuilder.getComponentById(previousRow.rowGroupId), Edge.BOTTOM, rowsGap);
                 }
                 previousRow = row;
             }
-            setCurrentComponent(getComponentById(getFormGroupId()));
+            layoutBuilder.setCurrentComponent(layoutBuilder.getComponentById(getFormGroupId()));
         }
 
         public class Row {
             String rowGroupId;
-            JLabel label;
-            Component field;
+            ComponentWrapper<T> label;
+            ComponentWrapper<T> field;
             FormRowAlignment alignment = FormRowAlignment.BASELINE;
 
-            protected Row(String rowGroupId, JLabel label, Component field) {
+            protected Row(String rowGroupId, ComponentWrapper<T> label, ComponentWrapper<T> field) {
                 this.rowGroupId = rowGroupId;
                 this.label = label;
                 this.field = field;
@@ -530,7 +539,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
             }
 
             public Row id(String id) {
-                id2ComponentMap.put(id, field);
+                layoutBuilder.id2ComponentMap.put(id, field);
                 return this;
             }
 
@@ -538,11 +547,11 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
                 return rowGroupId;
             }
 
-            public JLabel getLabel() {
+            public ComponentWrapper<T> getLabel() {
                 return label;
             }
 
-            public Component getField() {
+            public ComponentWrapper<T> getField() {
                 return field;
             }
         }
@@ -552,7 +561,7 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
         TOP, BOTTOM, CENTER, BASELINE;
     }
 
-    private Object getComponentById(String id) {
+    private ComponentWrapper<T> getComponentById(String id) {
         if (id.equals(SwingLayoutBuilder.PARENT)) {
             return container;
         }
@@ -591,5 +600,11 @@ public class RuleLayoutBuilder extends AbstractBuilder<RuleLayoutBuilder> {
 
     private void checkCurrentGroup() {
         throwIfNull(currentGroup, "There is no current group");
+    }
+
+    @Override
+    public RuleLayoutBuilder<T> exec(Consumer currentComponentProcessor) {
+        currentComponentProcessor.process((Component) currentComponent.getComponent());
+        return this;
     }
 }

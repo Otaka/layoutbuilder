@@ -1,6 +1,7 @@
 package com.swinglayoutbuilder;
 
-import javax.swing.*;
+import javax.swing.RootPaneContainer;
+import java.awt.Component;
 import java.awt.Container;
 
 public class SwingLayoutBuilder {
@@ -22,8 +23,8 @@ public class SwingLayoutBuilder {
         return new BorderLayoutBuilder(container);
     }
 
-    public RuleLayoutBuilder ruleLayout() {
-        return new RuleLayoutBuilder(container);
+    public RuleLayoutBuilder<Component> ruleLayout() {
+        return new RuleLayoutBuilder<>(container);
     }
 
     public FormLayoutBuilder formLayout() {

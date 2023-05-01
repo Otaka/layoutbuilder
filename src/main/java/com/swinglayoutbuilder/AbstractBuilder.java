@@ -1,7 +1,9 @@
 package com.swinglayoutbuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 
 public abstract class AbstractBuilder<T> {
     protected final Container container;
@@ -17,7 +19,7 @@ public abstract class AbstractBuilder<T> {
 
     public T debug(boolean debug) {
         this.debug = debug;
-        return (T) this;
+        return (T)this;
     }
 
     protected void add(Container parent, Component component, Object constraint) {
@@ -33,5 +35,15 @@ public abstract class AbstractBuilder<T> {
             jcomponent.setOpaque(true);
             jcomponent.setBackground(new Color((int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255)));
         }
+    }
+
+
+    public T exec(Consumer currentComponentProcessor) {
+        //override in child classes
+        return (T)this;
+    }
+
+    public interface Consumer {
+        void process(Component currentControl);
     }
 }

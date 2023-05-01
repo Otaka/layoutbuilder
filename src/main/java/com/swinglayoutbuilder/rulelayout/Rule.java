@@ -1,5 +1,7 @@
 package com.swinglayoutbuilder.rulelayout;
 
+import javax.swing.*;
+
 public class Rule {
     private final Edge anchorEdge;
     private final Object anchorComponent;

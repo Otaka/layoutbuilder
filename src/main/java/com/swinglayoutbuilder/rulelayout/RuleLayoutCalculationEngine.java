@@ -1,7 +1,8 @@
 package com.swinglayoutbuilder.rulelayout;
 
-import java.awt.*;
-import java.util.List;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.util.*;
 
 public class RuleLayoutCalculationEngine {
@@ -95,7 +96,7 @@ public class RuleLayoutCalculationEngine {
         int dh = rectangle.height - defaultHeight;
         for (AnchoredToParentEdges anchor : componentsAnchoredToParentEdges) {
             //Rectangle capturedBounds = anchor.getCapturedBounds();
-            Rectangle newBounds = realBounds.get(anchor.getObject());
+            Rectangle newBounds = realBounds.get(unwrapComponentWrapper(anchor.getObject()));
             int newX = newBounds.x;
             int newY = newBounds.y;
             int newX2 = newBounds.x + newBounds.width;
@@ -170,7 +171,20 @@ public class RuleLayoutCalculationEngine {
         }
     }
 
+    private Object unwrapComponentWrapper(Object potentialComponentWrapper) {
+        if (potentialComponentWrapper instanceof ComponentWrapper) {
+            ComponentWrapper wraper = (ComponentWrapper) potentialComponentWrapper;
+            if (wraper.isGroup()) {
+                return wraper.getGroup();
+            } else {
+                return wraper.getComponent();
+            }
+        }
+        return potentialComponentWrapper;
+    }
+
     ComponentRect getRect(Object component) {
+        component = unwrapComponentWrapper(component);
         if (component instanceof LayoutGroup && groups.contains(component)) {
             LayoutGroup group = (LayoutGroup) component;
             return group.getRect();
@@ -209,6 +223,7 @@ public class RuleLayoutCalculationEngine {
     }
 
     private void setPosition(ComponentRect rect, Object component, Edge edge, int value) {
+        component = unwrapComponentWrapper(component);
         if (component instanceof LayoutGroup) {
             int diffX = 0;
             int diffY = 0;

@@ -5,7 +5,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.Window;
 
 public class SwingLayoutBuilderTest {
     @Test
@@ -131,10 +134,10 @@ public class SwingLayoutBuilderTest {
                     t.setAlignLabelsLeft(false);
                     t.setRowsGap(5);
                     t.addRow("label1 jhkh", setPreferredSize(createColorBlock("component1", Color.GREEN), 100, 50));
+                    ruleLayout.anchorCurrentComponentEdgesToParentMovingEdges(false, false, false, false);
                     t.addRow("label2", setPreferredSize(new JEditorPane("text/plain", "hello world"), 300, 100))
                             .setLabelToFieldVerticalAlignment(RuleLayoutBuilder.FormRowAlignment.TOP);
                     t.addRow("la3", setPreferredSize(createColorBlock("component3", Color.BLUE), 100, 30));
-                    ruleLayout.anchorCurrentComponentEdgesToParentMovingEdges(false, false,true,false);
                 }).moveToParent(Edge.LEFT, Edge.LEFT, 0)
                 .finish();
         showFrame(frame);
@@ -176,7 +179,7 @@ public class SwingLayoutBuilderTest {
         new SwingLayoutBuilder(frame).ruleLayout().parentPadding(10, 20, 30, 40)
                 .add(createColorBlock("A", Color.GREEN)).preferredSize(150, 150)
                 .moveToParent(Edge.LEFT, Edge.LEFT, 0)
-                .anchorCurrentComponentEdgesToParentMovingEdges(false,false,true,true, 0.5f, 0.5f, 1f, 0.5f)
+                .anchorCurrentComponentEdgesToParentMovingEdges(false, false, true, true, 0.5f, 0.5f, 1f, 0.5f)
                 .finish();
         showFrame(frame);
     }

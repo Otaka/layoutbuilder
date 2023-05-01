@@ -14,4 +14,8 @@ public interface ComponentActionsWrapper {
     Dimension getMinimumSize(Object component);
 
     Dimension getPreferredSize(Object component);
+
+    void setPreferredSize(Object component, Dimension dimension);
+
+    void setMinimumSize(Object component, Dimension dimension);
 }

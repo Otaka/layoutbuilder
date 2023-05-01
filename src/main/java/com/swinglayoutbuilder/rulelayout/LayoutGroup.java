@@ -3,8 +3,8 @@ package com.swinglayoutbuilder.rulelayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LayoutGroup {
-    private final List<Object> children = new ArrayList<>();
+public class LayoutGroup<T> {
+    private final List<ComponentWrapper<T>> children = new ArrayList<>();
     private final ComponentRect rectangle = new ComponentRect();
     private final RuleLayoutCalculationEngine owner;
 
@@ -12,7 +12,7 @@ public class LayoutGroup {
         this.owner = owner;
     }
 
-    public void addComponent(Object component) {
+    public void addComponent(ComponentWrapper<T> component) {
         children.add(component);
     }
 
@@ -46,7 +46,7 @@ public class LayoutGroup {
         }
     }
 
-    public List<Object> getChildren() {
+    public List<ComponentWrapper<T>> getChildren() {
         return children;
     }
 }
