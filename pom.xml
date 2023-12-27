@@ -26,7 +26,7 @@
     <name>Swing Layout Builder</name>
     <description>
         Library that allows to create complex forms with convenient builder syntax.
-        It wraps some standard Swing layouts: BorderLayout, FlowLayout, GridBagLayout(to make FormLayout) and implements
+        It wraps some standard Swing layouts: BorderLayout, FlowLayout, GridBagLayout(to make FormLayout). Wraps third party MigLayout. Implements
         its own new RuleLayout
     </description>
     <url>https://github.com/Otaka/swinglayoutbuilder</url>
