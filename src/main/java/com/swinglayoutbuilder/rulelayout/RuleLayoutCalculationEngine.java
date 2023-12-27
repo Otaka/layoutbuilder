@@ -3,7 +3,13 @@ package com.swinglayoutbuilder.rulelayout;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class RuleLayoutCalculationEngine {
     private final Insets layoutPadding = new Insets(0, 0, 0, 0);
@@ -12,9 +18,9 @@ public class RuleLayoutCalculationEngine {
     private final Set<LayoutGroup> groups = new HashSet<>();
     private final ComponentActionsWrapper componentActionsWrapper;
     private final Object parent;
+    private final List<AnchoredToParentEdges> componentsAnchoredToParentEdges = new ArrayList<>();
     private int defaultWidth = -1;
     private int defaultHeight = -1;
-    private final List<AnchoredToParentEdges> componentsAnchoredToParentEdges = new ArrayList<>();
 
     public RuleLayoutCalculationEngine(Object parent, ComponentActionsWrapper componentActionsWrapper) {
         this.parent = parent;

@@ -1,6 +1,6 @@
 package com.swinglayoutbuilder.rulelayout;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class AnchoredToParentEdges {
     private final Object object;

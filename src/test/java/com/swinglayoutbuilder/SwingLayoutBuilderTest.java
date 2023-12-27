@@ -4,11 +4,24 @@ import com.swinglayoutbuilder.rulelayout.Edge;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.util.function.Consumer;
 
 public class SwingLayoutBuilderTest {
     @Test
@@ -184,7 +197,7 @@ public class SwingLayoutBuilderTest {
         showFrame(frame);
     }
 
-    private JComponent createColorBlock(String message, Color color) {
+    protected JComponent createColorBlock(String message, Color color) {
         JLabel label = new JLabel(message);
         label.setOpaque(true);
         label.setBackground(color);
@@ -192,26 +205,61 @@ public class SwingLayoutBuilderTest {
         return label;
     }
 
-    private JFrame createJFrame(String title) {
+    protected JPanel createPanel(Container parent) {
+        JPanel panel = new JPanel();
+        parent.add(panel);
+        return panel;
+    }
+
+    protected JButton createButton(String text) {
+        JButton label = new JButton();
+        label.setText(text);
+        return label;
+    }
+
+    protected JPanel createPanel(Container parent, Color color) {
+        JPanel panel = createPanel(parent);
+        panel.setBackground(color);
+        return panel;
+    }
+
+    protected JFrame createJFrame(String title) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle(title);
         return frame;
     }
 
-    public JComponent setPreferredSize(JComponent component, int width, int height) {
+    protected JComponent setPreferredSize(JComponent component, int width, int height) {
         component.setPreferredSize(new Dimension(width, height));
         return component;
     }
 
-    private void showFrame(final Window frame) {
+    protected void runInWindow(Consumer<JFrame> runnable) {
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        runnable.accept(frame);
+        showFrame(frame);
+    }
+
+    protected void showFrame(final Window frame) {
+        showFrame(frame, true);
+    }
+
+    protected void showFrame(final Window frame, boolean wait) {
         frame.pack();
         frame.setLocationRelativeTo(null);
         SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        if (wait) {
         try {
             Thread.sleep(999999);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+}
+
+    protected SwingLayoutBuilder createLayoutBuilder(Container container) {
+        return new SwingLayoutBuilder(container);
     }
 }

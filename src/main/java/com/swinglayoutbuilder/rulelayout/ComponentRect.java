@@ -33,26 +33,6 @@ public class ComponentRect {
         return x;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void moveX(int value) {
-        this.x = value;
-    }
-
-    public void moveY(int value) {
-        this.y = value;
-    }
-
     public void setX(int x) {
         if (x2Set) {
             int lastX2 = getX2();
@@ -62,6 +42,10 @@ public class ComponentRect {
         this.x = x;
         x1Set = true;
         normalize();
+    }
+
+    public int getY() {
+        return y;
     }
 
     public void setY(int y) {
@@ -75,12 +59,20 @@ public class ComponentRect {
         normalize();
     }
 
+    public int getWidth() {
+        return width;
+    }
+
     public void setWidth(int width) {
         if (x2Set) {
             int lastX2 = getX2();
             x = lastX2 - width;
         }
         this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public void setHeight(int height) {
@@ -91,12 +83,16 @@ public class ComponentRect {
         this.height = height;
     }
 
-    public int getX2() {
-        return x + width;
+    public void moveX(int value) {
+        this.x = value;
     }
 
-    public int getY2() {
-        return y + height;
+    public void moveY(int value) {
+        this.y = value;
+    }
+
+    public int getX2() {
+        return x + width;
     }
 
     public void setX2(int value) {
@@ -106,6 +102,10 @@ public class ComponentRect {
             x = value - width;
         }
         x2Set = true;
+    }
+
+    public int getY2() {
+        return y + height;
     }
 
     public void setY2(int value) {

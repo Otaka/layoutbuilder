@@ -1,7 +1,13 @@
 package com.swinglayoutbuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +15,9 @@ import java.util.List;
  * Simple layout that puts components in two columns(label:field)
  */
 public class FormLayoutBuilder extends AbstractBuilder<FormLayoutBuilder> {
+    private final List<List<Pair>> columns = new ArrayList<>();
     private boolean labelLeftAlignment = true;
     private List<Pair> currentColumn;
-    private final List<List<Pair>> columns = new ArrayList<>();
     private int gapLabelToComponent = 5;
     private int gapBetweenRows = 5;
     private int gapBetweenColumns = 20;
@@ -170,6 +176,10 @@ public class FormLayoutBuilder extends AbstractBuilder<FormLayoutBuilder> {
         return container;
     }
 
+    public interface LabelFactory {
+        Component create(String text);
+    }
+
     private static class Pair {
         Component label;
         Component field;
@@ -178,9 +188,5 @@ public class FormLayoutBuilder extends AbstractBuilder<FormLayoutBuilder> {
             this.label = label;
             this.field = field;
         }
-    }
-
-    public interface LabelFactory {
-        Component create(String text);
     }
 }

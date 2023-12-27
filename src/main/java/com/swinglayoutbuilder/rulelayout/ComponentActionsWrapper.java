@@ -1,6 +1,7 @@
 package com.swinglayoutbuilder.rulelayout;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 
 public interface ComponentActionsWrapper {
     Rectangle getComponentRect(Object component);

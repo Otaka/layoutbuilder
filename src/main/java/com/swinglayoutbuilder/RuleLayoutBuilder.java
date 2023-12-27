@@ -1,6 +1,10 @@
 package com.swinglayoutbuilder;
 
-import com.swinglayoutbuilder.rulelayout.*;
+import com.swinglayoutbuilder.rulelayout.ComponentWrapper;
+import com.swinglayoutbuilder.rulelayout.Edge;
+import com.swinglayoutbuilder.rulelayout.LayoutGroup;
+import com.swinglayoutbuilder.rulelayout.Rule;
+import com.swinglayoutbuilder.rulelayout.RuleLayout;
 
 import javax.swing.JLabel;
 import java.awt.Component;
@@ -13,6 +17,8 @@ import java.util.Map;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> {
+    private final Map<String, ComponentWrapper<T>> id2ComponentMap = new HashMap<>();
+    private final RuleLayout layout;
     private ComponentWrapper<T> container;
     private ComponentWrapper<T> previousComponent;
     private ComponentWrapper<T> currentComponent;
@@ -20,9 +26,6 @@ public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> 
     private ComponentWrapper<T> anchor2Component;
     private ComponentWrapper<T> anchor3Component;
     private LayoutGroup<T> currentGroup;
-    private final Map<String, ComponentWrapper<T>> id2ComponentMap = new HashMap<>();
-    private final RuleLayout layout;
-
 
     protected RuleLayoutBuilder(Container container) {
         super(container);
@@ -166,7 +169,6 @@ public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> 
     public RuleLayoutBuilder<T> moveParentToId(Edge edge, String anchorComponentId, Edge anchorEdge, int gap) {
         return move(container, edge, anchorComponentId, anchorEdge, gap);
     }
-
 
     /**
      * Move parent edge to current component edge
@@ -383,11 +385,63 @@ public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> 
         return this;
     }
 
+    private ComponentWrapper<T> getComponentById(String id) {
+        if (id.equals(SwingLayoutBuilder.PARENT)) {
+            return container;
+        }
+
+        if (!id2ComponentMap.containsKey(id)) {
+            throw new IllegalArgumentException("Cannot find component with id=" + id);
+        }
+        return id2ComponentMap.get(id);
+    }
+
+    private void throwIfNull(Object obj, String message) {
+        if (obj == null) {
+            throw new IllegalStateException(message);
+        }
+    }
+
+    private void checkCurrentComponent() {
+        throwIfNull(currentComponent, "There is no current component");
+    }
+
+    private void checkPreviousComponent() {
+        throwIfNull(previousComponent, "There is no previous component");
+    }
+
+    private void checkAnchor1Component() {
+        throwIfNull(anchor1Component, "There is no anchor1 component");
+    }
+
+    private void checkAnchor2Component() {
+        throwIfNull(anchor2Component, "There is no anchor2 component");
+    }
+
+    private void checkAnchor3Component() {
+        throwIfNull(anchor3Component, "There is no anchor3 component");
+    }
+
+    private void checkCurrentGroup() {
+        throwIfNull(currentGroup, "There is no current group");
+    }
+
+    @Override
+    public RuleLayoutBuilder<T> exec(Consumer currentComponentProcessor) {
+        currentComponentProcessor.process((Component) currentComponent.getComponent());
+        return this;
+    }
+
+    public enum FormRowAlignment {
+        TOP, BOTTOM, CENTER, BASELINE;
+    }
+
     public interface FormTemplateProvider<T> {
         void run(FormTemplate<T> formTemplate, RuleLayoutBuilder<T> ruleLayoutBuilder);
     }
 
     public static class FormTemplate<T> {
+        private final List<Row> rows = new ArrayList<>();
         RuleLayoutBuilder<T> layoutBuilder;
         String formGroupId;
         String labelGroupId;
@@ -396,7 +450,6 @@ public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> 
         int rowsGap = 10;
         int rowIndex = 0;
         private boolean alignLabelsLeft = true;
-        private final List<Row> rows = new ArrayList<>();
 
         public FormTemplate(RuleLayoutBuilder<T> layoutBuilder, int labelToComponentDistance) {
             this.labelToComponentDistance = labelToComponentDistance;
@@ -555,56 +608,5 @@ public class RuleLayoutBuilder<T> extends AbstractBuilder<RuleLayoutBuilder<T>> 
                 return field;
             }
         }
-    }
-
-    public enum FormRowAlignment {
-        TOP, BOTTOM, CENTER, BASELINE;
-    }
-
-    private ComponentWrapper<T> getComponentById(String id) {
-        if (id.equals(SwingLayoutBuilder.PARENT)) {
-            return container;
-        }
-
-        if (!id2ComponentMap.containsKey(id)) {
-            throw new IllegalArgumentException("Cannot find component with id=" + id);
-        }
-        return id2ComponentMap.get(id);
-    }
-
-    private void throwIfNull(Object obj, String message) {
-        if (obj == null) {
-            throw new IllegalStateException(message);
-        }
-    }
-
-    private void checkCurrentComponent() {
-        throwIfNull(currentComponent, "There is no current component");
-    }
-
-    private void checkPreviousComponent() {
-        throwIfNull(previousComponent, "There is no previous component");
-    }
-
-    private void checkAnchor1Component() {
-        throwIfNull(anchor1Component, "There is no anchor1 component");
-    }
-
-    private void checkAnchor2Component() {
-        throwIfNull(anchor2Component, "There is no anchor2 component");
-    }
-
-    private void checkAnchor3Component() {
-        throwIfNull(anchor3Component, "There is no anchor3 component");
-    }
-
-    private void checkCurrentGroup() {
-        throwIfNull(currentGroup, "There is no current group");
-    }
-
-    @Override
-    public RuleLayoutBuilder<T> exec(Consumer currentComponentProcessor) {
-        currentComponentProcessor.process((Component) currentComponent.getComponent());
-        return this;
     }
 }

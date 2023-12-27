@@ -1,7 +1,11 @@
 package com.swinglayoutbuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 public class RowWithWrappingBuilder extends AbstractBuilder<RowWithWrappingBuilder> {
 

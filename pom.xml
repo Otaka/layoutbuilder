@@ -6,7 +6,7 @@
 
     <groupId>io.github.otaka</groupId>
     <artifactId>swinglayoutbuilder</artifactId>
-    <version>0.7</version>
+    <version>0.8</version>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -14,12 +14,20 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
+    <dependency>
+            <groupId>com.miglayout</groupId>
+            <artifactId>miglayout</artifactId>
+            <version>3.7.4</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <name>Swing Layout Builder</name>
     <description>
         Library that allows to create complex forms with convenient builder syntax.
-        It wraps some standard Swing layouts: BorderLayout, FlowLayout, GridBagLayout(to make FormLayout) and implements its own new RuleLayout
+        It wraps some standard Swing layouts: BorderLayout, FlowLayout, GridBagLayout(to make FormLayout) and implements
+        its own new RuleLayout
     </description>
     <url>https://github.com/Otaka/swinglayoutbuilder</url>
 

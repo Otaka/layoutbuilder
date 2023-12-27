@@ -5,8 +5,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 
+@SuppressWarnings("unchecked")
 public abstract class AbstractBuilder<T> {
-    protected final Container container;
+    protected Container container;
     private boolean debug;
 
     protected AbstractBuilder(Container container) {

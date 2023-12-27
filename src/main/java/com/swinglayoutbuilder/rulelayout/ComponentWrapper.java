@@ -4,16 +4,16 @@ public class ComponentWrapper<T> {
     private T component;
     private LayoutGroup<T> group;
 
-    public boolean isGroup() {
-        return group != null;
-    }
-
     public ComponentWrapper(T component) {
         this.component = component;
     }
 
     public ComponentWrapper(LayoutGroup<T> group) {
         this.group = group;
+    }
+
+    public boolean isGroup() {
+        return group != null;
     }
 
     public LayoutGroup<T> getGroup() {
